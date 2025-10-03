@@ -1,0 +1,110 @@
+﻿@model HanClothesShopProject.Models.ImageChart
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>新增輪播圖</h1>
+<div>
+    <a asp-action="Index" class="btn btn-default">返回</a>
+</div>
+
+
+<h4>ImageChart</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" id="myForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Url" class="control-label">跳轉地址</label>
+                <input asp-for="Url" class="form-control" required="true"/>
+                <span asp-validation-for="Url" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageUrl" class="control-label">輪播圖顯示</label>
+                <input type="file" id="pic" name="pic" class="form-control" accept="image/*"
+                       onchange="upload(event)">
+                <input type="hidden" name="ImageUrl" id="img" value="" required />
+                <div id="showImg"></div>
+            </div>
+           <input type="hidden" name="createtime" value="@DateTime.Now" />
+         
+            <div class="form-group">
+               <label asp-for="State" class="control-label">圖狀態</label>
+               <select name="State" class="form-control">
+                    <option value="1">正常顯示</option>
+                    <option value="0">下架不顯示</option>
+                </select>
+              
+            </div>
+            <div class="form-group">
+                <input type="submit" value="新增輪播圖" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script>
+   
+
+    //實現異步上傳
+    function upload(event) {
+        var imgPath = $("#pic").val();
+        console.log(imgPath);
+        //判斷上傳文件的後綴名
+        var strExtension = imgPath.substr(imgPath.lastIndexOf('.') + 1);
+        if (strExtension != 'jpg' && strExtension != 'gif' && strExtension != 'png' && strExtension != 'bmp') {
+            alert("請選擇圖片文件");
+            return;
+        }
+        //實現文件上傳操作
+        if (event.target.files[0].type.search('image') !== -1) {
+            //實現文件圖片的上傳
+            var formData = new FormData($("#myForm")[0]);//用於創建一個文件流對象
+            //formData.append('pic', $("#img")[0]); //添加文件流 （流名稱，流）
+            //console.log(formData);
+            $.ajax({
+                url: "/Upload/file",
+                type: "post",
+                cache: false,
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (res) {
+                    console.log(res);
+                    if (res.trim() == "209") {
+                        alert("請選擇圖片！");
+                        return;
+                    }
+                    if (res.trim() == "300") {
+                        alert("上傳的圖片不能為空圖片！");
+                        return;
+                    }
+                    if (res.trim() == "400") {
+                        alert("上傳的圖片失敗！");
+                        return;
+                    }
+                    //alert("上傳成功！");
+                    $("#showImg").html("<img src='" + res + "' width='150' height='150' /><p style='color:red;'>上傳成功！</p>");
+                    //設置上傳的圖片地址
+                    var res = res.trim(); //去除圖片的前後空白字符
+                    $("#img").val(res);
+                },
+                error: function (res) {
+                    alert("上傳異常！");
+                }
+            });
+        } else {
+            alert('只支持上傳圖片');
+        }
+    }
+</script>
+

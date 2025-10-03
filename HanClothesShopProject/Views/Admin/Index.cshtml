@@ -1,0 +1,120 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject HanClothesShopProject.Models.dbContext _context
+
+@{
+    Layout = "/Views/Shared/_BackLayout.cshtml";
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">歡迎進入商城</div>
+    <div class="panel-body">
+        <h1 > 歡迎進入商城系統</h1>
+        <p>
+            @if (HttpContextAccessor.HttpContext.Session.GetInt32("role") != null
+            && HttpContextAccessor.HttpContext.Session.GetInt32("role") == 2)
+            {
+                <b>超級管理員</b>
+            }
+            else
+            {
+                <b>管理員</b>
+            }
+            @HttpContextAccessor.HttpContext.Session.GetString("nickname")
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">今天(@(DateTime.Now.ToString("D")))收入</div>
+            <div class="panel-body"style="text-align:center">
+                <b style="color:red;font-size:36px">@ViewBag.todayMoney</b>元
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">本周@(ViewBag.startWeek)-@(ViewBag.endWeek)收入</div>
+            <div class="panel-body" style="text-align:center">
+                <b style="color:red;font-size:36px">@ViewBag.weekMoney</b>元
+            </div>
+        </div>     
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">今年(@(DateTime.Now.ToString("yyyy")))收入</div>
+            <div class="panel-body" style="text-align:center">
+                <b style="color:red;font-size:36px">@ViewBag.yearMoney</b>元
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">今日訂單</div>
+    <div class="panel-body">
+        <table class="table">
+            <tr>
+                <th>訂單編號</th>
+                <th>訂單金額</th>
+                <th>是否支付</th>
+                <th>訂單狀態</th>
+                <th>下單時間</th>
+                <th>下單用戶</th>
+                <th>優惠金額</th>
+                <th>操作</th>
+            </tr>
+            @foreach (Order item in ViewBag.orderList)
+            {
+                <tr class="active">
+                    <th scope="row">@item.OrderNum</th>
+                    <th>@item.SumPrice</th>
+                    <th>
+                        @switch(item.IsPay) {
+                            case 1:
+                                <b class="btn btn-success">已付款</b>
+                                break;
+                            case 0:
+                                <b class="btn btn-danger">未付款</b>
+                                break;
+                        }
+                    </th>
+                    <th>
+                        @switch (item.State)
+                        {
+                            case 1:
+                                <b class="btn btn-danger">未發貨</b>
+                                break;
+                            case 2:
+                                <b class="btn btn-success">已發貨</b>
+                                break;
+                            case 3:
+                                <b class="btn btn-info">已簽收</b>
+                                break;
+                            case 4:
+                                <b class="btn btn-pr">已評論</b>
+                                break;
+                            case 5:
+                                <b class="btn btn-default">退貨中</b>
+                                break;
+                            case 6:
+                                <b class="btn btn-success">訂單已完成</b>
+                                break;
+                            default:
+                                <b class="btn btn-danger">訂單已取消</b>
+                                break;
+                        }
+                    </th>
+                    <th>@item.Createtime</th>
+                    <th>@item.UidNavigation.Nickname</th>
+                    <th>@(item.DecMoney)元</th>
+                    <th><a href="/Orders/Details/@item.Id">查看訂單詳情</a></th>
+                </tr>
+            }
+        </table>
+        @if (ViewBag.orderList.Count == 0) { 
+               <h1 align="center">今日還未有訂單</h1>
+        }
+    </div>
+</div>
+

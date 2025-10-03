@@ -1,0 +1,90 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.ImageChart>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>輪播圖管理</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">新增輪播圖</a>
+</p>
+<form action="" method="get">
+    跳轉連接模糊搜尋: <input type="text" name="url" value="@ViewBag.url" class="form-control" style="width:250px; display:inline-block;" />
+    狀態:<select name="sex" class="form-control" style="width:250px; display:inline-block;">
+        <option value="-1">全部</option>
+        <option value="1">正常展示</option>
+        <option value="0" >下架</option>
+    </select>
+    <input type="submit" class="btn btn-success" value="查詢 " />
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                跳轉地址
+            </th>
+            <th>
+                輪播圖
+            </th>
+            <th>
+                新增時間
+            </th>
+            <th>
+                顯示狀態
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    <a href=" @Html.DisplayFor(modelItem => item.Url)" target="_blank">位置顯示</a>
+                </td>
+                <td>
+                    <img src=" @Html.DisplayFor(modelItem => item.ImageUrl)"width="200" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Createtime)
+                </td>
+                <td>
+                    @if (item.State == 1)
+                    {
+                        <b class="btn btn-success" >正常顯示</b>
+                    }
+                    else
+                    {
+                        <b class="btn btn-danger">下架不顯示</b>
+                    }
+                </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info">編輯</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" onclick="return confirm('確認')">刪除</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@if (Model.Count() == 0)
+{
+    <h1 align="center">沒有找到使用者數據</h1>
+}
+
+<ul class="pagination" style="display:flex; justify-content:center;">
+    @if (ViewBag.pageNum == null || ViewBag.pageNum == 0)
+    {
+        <li><a herf="?page=1">1</a></li>
+    }
+    else
+    {
+        @for (var i = 1; i <= ViewBag.pageNum; i++)
+        {
+            <li><a herf="?page=1&url=@(ViewBag.url)&state=@(ViewBag.state)">@i</a></li>
+        }
+    }
+</ul>

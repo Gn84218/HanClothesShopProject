@@ -1,0 +1,85 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-clearmin.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/roboto.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/font-awesome.min.css">
+    <title>漢服商城</title>
+    <style></style>
+</head>
+<body class="cm-login">
+
+    <div class="text-center" style="padding:90px 0 30px 0;background:#fff;border-bottom:1px solid #ddd">
+        <img src="assets/img/logo-big.svg" width="300" height="45">
+        <h1> 漢服商城管理員登入 </h1>
+    </div>
+
+    <div class="col-sm-6 col-md-4 col-lg-3" style="margin:40px auto; float:none;">
+        <form method="post" action="index.html">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon"><i class="fa fa-fw fa-user"></i></div>
+                        <input type="text" name="username" id="phone" class="form-control" placeholder="輸入帳號">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon"><i class="fa fa-fw fa-lock"></i></div>
+                        <input type="password" name="password"id="pwd" class="form-control" placeholder="輸入密碼">
+                    </div>
+                </div>
+            </div>
+           
+            <div class="col-xs-12">
+                <button type="button" onclick="sub()" class="btn btn-block btn-primary">登入</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    function sub(){
+          var phone=$("#phone").val();
+          var pwd=$("#pwd").val();
+          if(phone.length==0){
+              alert("請輸入手機號");
+              $("#phone").focus();
+              return false;
+          }
+           if(!/^\d{10}$.test(phone)){
+              alert("請輸入正確手機號碼");
+              $("#phone").focus();
+              return false;
+          }
+           if(pwd.length==0){
+              alert("請輸入密碼");
+              $("#pwd").focus();
+              return false;
+          }
+          //觸發AJAX異步請求實現後端操作
+          $.ajax({
+    url: "/Login/Index",
+    type: "POST",
+    data: { phone: phone, pwd: pwd },
+    success: function(response) {
+       if(response.code==200){
+           window.location.href="/Admin/Index";
+       }
+       else{
+           alert(response.msg) ;
+       }
+    },
+    error: function(xhr) {
+        console.error("後端處理失敗" );
+    }
+});
+    }
+</script>

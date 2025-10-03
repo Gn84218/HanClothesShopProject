@@ -1,0 +1,100 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.User>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">新增用戶</a>
+</p>
+<form action=""method="get">
+    手機號: <input type="text" name="phone" value="@ViewBag.phone" class="form-control" style="width:250px; display:inline-block;" />
+    暱稱: <input type="text" name="nickname" value="@ViewBag.nickname" class="form-control" style="width:250px; display:inline-block;" />
+    性別L<select name="sex" class="form-control" style="width:250px; display:inline-block;" >
+        <option value="">全部</option>
+        <option value="男">男</option>
+        <option value="女">女</option>
+    </select>
+    <input type="submit" class="btn btn-success" value="查詢 " />
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                手機號
+            </th>
+            <th>
+                密碼
+            </th>
+            <th>
+                暱稱
+            </th>
+            <th>
+                性別
+            </th>
+            <th>
+                自我介紹
+            </th>
+            <th>
+                年齡
+            </th>
+            <th>
+                頭像
+            </th>
+
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Phone)
+                </td>          
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nickname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sex)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Introduce)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Age)
+                </td>
+                <td>
+                    <img src="@item.Img" width="100" height="100" />
+                </td>
+
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info">編輯</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">詳細</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" onclick="return confirm('確認')">刪除</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.Count()==0)
+{
+    <h1 align="center">沒有找到使用者數據</h1>
+}
+
+<ul class="pagination" style="display:flex; justify-content:center;">
+    @if (ViewBag.pageNum == null || ViewBag.pageNum == 0)
+    {
+        <li><a herf="?page=1">1</a></li>
+    }
+    else
+    {
+        @for (var i = 1; i <= ViewBag.pageNum; i++)
+        {
+            <li><a herf="?page=1&phone=@(ViewBag.phone)&nickname=@(ViewBag.nickname)&sex=@(ViewBag.sex)">@i</a></li>
+        }
+    }
+</ul>

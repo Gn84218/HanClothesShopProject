@@ -1,0 +1,143 @@
+﻿@{
+    Layout = null;
+}
+<!-- 注入服务，使用HttpContextAccessor 接口 -->
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject HanClothesShopProject.Models.dbContext _context
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-clearmin.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/roboto.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/material-design.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/small-n-flat.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/font-awesome.min.css">
+    <title>漢服後台管理</title>
+</head>
+<body class="cm-no-transition cm-1-navbar">
+    <div id="cm-menu">
+        <nav class="cm-navbar cm-navbar-primary">
+            <div class="cm-flex"><h4 style="text-align:center;line-height:30px;">漢服商城</h4></div>
+            <div class="btn btn-primary md-menu-white" data-toggle="cm-menu"></div>
+        </nav>
+        <div id="cm-menu-content">
+            <div id="cm-menu-items-wrapper">
+                <div id="cm-menu-scroller">
+                    <ul class="cm-menu-items">
+                        <li class="active"><a href="index.html" class="sf-house">管理首頁</a></li>
+                        <li><a href="/User/Index" class="sf-dashboard">用戶管理</a></li>
+                        <!-- 超級管理員為 "2" -->
+                        @{
+                            if (HttpContextAccessor.HttpContext.Session.GetInt32("role") != null
+                                && HttpContextAccessor.HttpContext.Session.GetInt32("role") == 2) {
+                                <li><a href="components-text.html" class="sf-brick">管理員管理</a></li>
+                                }
+                        }
+                        
+                        <li class="cm-submenu">
+                            <a class="sf-window-layout">首頁輪播圖管理 <span class="caret"></span></a>
+                            <ul>
+                                <li><a href="/ImageChart/Create">新增輪播圖</a></li>
+                                <li><a href="/ImageChart/Index">輪播圖管理</a></li>
+
+                            </ul>
+                        </li>
+                        <li class="cm-submenu">
+                            <a class="sf-cat">商品分類管理 <span class="caret"></span></a>
+                            <ul>
+                                <li><a href="/Category/Create">新增分類</a></li>
+                                <li><a href="/Category/Index">分類管理 </a></li>
+
+                            </ul>
+                        </li>
+                        <li><a href="/Article/Index" class="sf-notepad">平台文章</a></li>
+                        <li><a href="/Product/Index" class="sf-notepad">商品管理</a></li>
+                        <li><a href="/Coupons/Index" class="sf-notepad">優惠卷管理</a></li>
+                        <li><a href="/Orders/Index" class="sf-notepad">訂單管理</a></li>
+                        <li><a href="/OrderComment/Index" class="sf-notepad">商品評論管理</a></li>
+                        <li><a href="/Product/Index" class="sf-notepad">訂單售後管理</a></li>
+                        <li class="cm-submenu">
+                            <a class="sf-monitor">訂單報表<span class="caret"></span></a> 
+                            <ul>
+                                <li><a href="/Admin/ShopCount">商品統計</a></li>
+                                <li><a href="/Admin/OrderCount">訂單統計</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <header id="cm-header">
+        <nav class="cm-navbar cm-navbar-primary">
+            <div class="btn btn-primary md-menu-white hidden-md hidden-lg" data-toggle="cm-menu"></div>
+            <div class="cm-flex">
+                <h1><a href="/" style="color:aliceblue;">首頁</a></h1>            
+            </div>    
+            <!--獲取管理員數據回來-->
+            @{
+                <!--如果獲取的session中使用者id不為空-->
+                int count = 0;
+                if (HttpContextAccessor.HttpContext.Session.GetInt32("id") != null) {
+                    int uid = (int)HttpContextAccessor.HttpContext.Session.GetInt32("id");
+                    <!--使用者帳號一致 且未讀取-->
+                     count = _context.ChatMessages.Where(p => p.ToUserid == uid && p.IsRead == 0).Count();
+                }
+                
+            }
+            <div class="dropdown pull-right">
+                <button class="btn btn-primary md-notifications-white" 
+                      onclick="window.location.href='/Admin/Send'"
+                      data-toggle="dropdown">
+                    <span class="label label-danger">@(count!=null?count:0)</span> 
+                </button>             
+            </div>
+            <div class="dropdown pull-right">
+                <button class="btn btn-primary md-account-circle-white" data-toggle="dropdown"></button>
+                <ul class="dropdown-menu">
+                    <li class="disabled text-center">
+                        <a style="cursor:default;">
+                        <strong>
+                                @if (HttpContextAccessor.HttpContext.Session.GetInt32("role") != null
+                                && HttpContextAccessor.HttpContext.Session.GetInt32("role") == 2)
+                                {
+                                    <b>超級管理員</b>
+                                }
+                                else
+                                {
+                                    <b>管理員</b>
+                                }
+                                @HttpContextAccessor.HttpContext.Session.GetString("nickname")
+                        </strong></a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="/Admin/Update"><i class="fa fa-fw fa-user"></i> 修改密碼</a>
+                    </li>               
+                    <li>
+                        <a href="/Login/Logout"><i class="fa fa-fw fa-sign-out"></i>退出系統</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- 主体区域替换 -->
+    <div id="global">
+        <div class="container-fluid" style="background:#fff;">
+            <div class="row cm-fix-height">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    <!-- 主体区域替换结束 -->
+    <script src="/assets/js/lib/jquery.min.js"></script>
+    <script src="/assets/js/jquery.mousewheel.min.js"></script>
+    <script src="/assets/js/jquery.cookie.min.js"></script>
+    <script src="/assets/js/fastclick.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <script src="/assets/js/clearmin.min.js"></script>
+    <script src="/assets/js/demo/home.js"></script>
+</body>
+</html>
