@@ -1,0 +1,28 @@
+﻿@model HanClothesShopProject.Models.Category
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>新增分類</h1>
+<div>
+    <a asp-action="Index" class="btn btn-default">返回</a>
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Catename" class="control-label">分類名稱</label>
+                <input asp-for="Catename" class="form-control"  required="true"/>
+                <span asp-validation-for="Catename" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="保存" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+

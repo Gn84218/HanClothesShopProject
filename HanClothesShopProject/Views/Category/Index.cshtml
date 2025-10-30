@@ -1,0 +1,64 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.Category>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>分類管理</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">新增分類</a>
+</p>
+<form action="" method="get">
+    分類名稱搜尋: <input type="text" name="keyword" value="@ViewBag.keyword" class="form-control" style="width:250px; display:inline-block;" />
+    <input type="submit" class="btn btn-success" value="查詢 " />
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+               分類名稱
+            </th>
+            <th>
+               操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Catename)
+            </td>
+            <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info">編輯</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id"  class="btn btn-danger" onclick="return confirm('確認')">刪除</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@if (Model.Count() == 0)
+{
+    <h1 align="center">沒有找到分類名稱數據</h1>
+}
+
+<ul class="pagination" style="display:flex; justify-content:center;">
+    @if (ViewBag.pageNum == null || ViewBag.pageNum == 0)
+    {
+        <li><a href="?page=1">1</a></li>
+    }
+    else
+    {
+        @for (var i = 1; i <= ViewBag.pageNum; i++)
+        {
+            <li>
+                <a href="?page=@i&keyword=@(ViewBag.keyword)">
+                    @i
+                </a>
+            </li>
+        }
+    }
+</ul>
+

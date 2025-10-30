@@ -1,0 +1,47 @@
+﻿@using Microsoft.AspNetCore.Html
+@model HanClothesShopProject.Models.Article
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>編輯文章</h1>
+<div>
+    <a asp-action="Index" class="btn btn-default">返回</a>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger">標題:</div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Detail" class="control-label">詳情:</label>
+                <!-- 下面是使用富文本编辑器支持输入文章内容 -->
+                <script id="container" name="Detail" type="text/plain">
+                  @(new HtmlString(Model.Detail))  
+                </script>    
+                <script type="text/javascript" src="/utf8-net/ueditor.config.js"></script>
+                <script type="text/javascript" src="/utf8-net/ueditor.all.js"></script>
+                <script type="text/javascript" src="/utf8-net/lang/zh-cn/zh-cn.js"></script>
+                <script>
+                    var ue = UE.getEditor("container", {
+                    initialFrameHeight:500
+                    });
+                </script>
+                <!-- 文章内容使用完结 -->
+            </div>
+            <input type="hidden" name="sight" value="@Model.Sight" />
+            <input type="hidden" name="createtime" value="@Model.Createtime" /> 
+            <input type="hidden" name="id" value="@Model.Id" />
+            <div class="form-group">
+                <input type="submit" value="保存" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

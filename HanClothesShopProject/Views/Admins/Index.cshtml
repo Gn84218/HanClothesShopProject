@@ -94,7 +94,7 @@
     {
         @for (var i = 1; i <= ViewBag.pageNum; i++)
         {
-            <li><a herf="?page=1&phone=@(ViewBag.phone)&nickname=@(ViewBag.nickname)&sex=@(ViewBag.sex)">@i</a></li>
+            <li><a herf="?page=@i&phone=@(ViewBag.phone)&nickname=@(ViewBag.nickname)&sex=@(ViewBag.sex)">@i</a></li>
         }
     }
 </ul>
