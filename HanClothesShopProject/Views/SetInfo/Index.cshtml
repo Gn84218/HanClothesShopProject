@@ -1,0 +1,66 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.ReturnSet>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>商家退貨管理</h1>
+
+<p>
+    <a asp-action="Create">新增退貨地址</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>省份</th>
+            <th>城市</th>
+            <th>區域</th>
+            <th>詳細地址</th>
+            <th>收貨人姓名</th>
+            <th>收貨人電話</th>
+            <th>備註</th>
+            <th>創建時間</th>
+            <th>操作</th>
+        </tr>
+
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Province)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.City)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Area)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Detail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Mark)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Createtime)
+            </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success">訂單詳細</a> |                   
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" onclick="return confirm('確認刪除該筆資料嗎?')">刪除</a>
+                </td>
+        </tr>
+}
+    </tbody>
+</table>
+@if (Model.Count() == 0)
+{
+    <h1 align="center">沒有找到新增退貨數據</h1>
+}
