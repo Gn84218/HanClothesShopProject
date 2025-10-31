@@ -17,6 +17,16 @@ namespace HanClothesShopProject.Controllers
         {
             return View();
         }
+        //登入
+        public IActionResult Login()
+        {
+            return View();
+        }
+        //註冊
+        public IActionResult Register()
+        {
+            return View();
+        }
 
         public IActionResult Privacy()
         {

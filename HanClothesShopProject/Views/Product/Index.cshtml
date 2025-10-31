@@ -1,0 +1,138 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.Product>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>商品管理</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">新增商品</a>
+</p>
+<form action="" method="get">
+    商品名稱: <input type="text" name="keyword" value="@ViewBag.keyword" class="form-control" style="width:250px; display:inline-block;" />
+    分類:<select name="sex" class="form-control" style="width:250px; display:inline-block;">
+        <option value="-1">全部</option>
+        @foreach(Category item in ViewBag.clist)
+        {
+            <option value="@item.Id">@item.Catename</option>
+        }
+    </select>
+    商品狀態:<select name="state" class="form-control" style="width:250px; display:inline-block;">
+        <option value="-1">全部</option>
+        <option value="1">正常</option>
+        <option value="0">下架</option>
+        <input type="submit" class="btn btn-success" value="查詢 " />
+    </select>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                標題
+            </th>
+            <th>
+                原價
+            </th>
+            <th>
+                特惠價
+            </th>
+            <th>
+                庫存
+            </th>
+            <th>
+                封面圖
+            </th>          
+            <th>
+                商品狀態
+            </th>
+            <th>
+                創建時間
+            </th>
+            <th>
+                評分
+            </th>
+            <th>
+                運費
+            </th>
+            <th>
+                商品分類
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)元
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SalePrice)元
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Number)件
+                </td>            
+                <td>
+                    <img src="@Html.DisplayFor(modelItem=>item.Img)" width="100" />
+                </td>
+                <td>
+                    @if (item.State == 1)
+                    {
+                        <b class="btn btn-success">正常</b>
+                    }
+                    else 
+                    {
+                        <b class="btn btn-danger">下架</b>
+                    }
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Createtime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Score)分
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Postage)元
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CidNavigation.Catename)
+            </td>
+            <td>
+                    <a href="/ProductImage/Index?sid=@item.Id" target="_blank" class="btn btn-primary">商品附加圖片管理</a> |
+                    <a href="/ProductAttribute/Index?sid=@item.Id" target="_blank" class="btn btn-primary">商品屬性管理</a> |
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info">編輯</a> |
+                    <a href="/Home/Details/@item.Id" target="_blank" class="btn btn-primary">詳細</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" onclick="return confirm('確認刪除該筆資料嗎?')">刪除</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>@if (Model.Count() == 0)
+{
+    <h1 align="center">沒有找到商品數據</h1>
+}
+<style>   
+    .pagination{
+        display: flex;
+        justify-content: center;
+    }
+    
+</style>"
+<ul class="pagination"">
+    @if (ViewBag.pageNum == null || ViewBag.pageNum == 0)
+    {
+        <li><a href="?page=1">1</a></li>
+    }
+    else
+    {
+        @for (var i = 1; i <= ViewBag.pageNum; i++)
+        {
+            <li><a href="?page=@i&keyword=@(ViewBag.keyword)&cid=@(ViewBag.cid)&state=@(ViewBag.state)">@i</a></li>
+        }
+    }
+</ul>

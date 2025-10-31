@@ -1,0 +1,166 @@
+﻿@using Microsoft.AspNetCore.Html
+@model HanClothesShopProject.Models.Product
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>編輯</h1>
+
+<div>
+    <a asp-action="Index" class="btn btn-default">返回</a>
+</div>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit" onsubmit="return checkForm()" id="myForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label">商品標題</label>
+                <input asp-for="Title" class="form-control" required />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Cid" class="control-label">商品分類</label>
+                <select asp-for="Cid" class="form-control" asp-items="ViewBag.Cid"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label">原價</label>
+                <input asp-for="Price" class="form-control" required />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SalePrice" class="control-label">優惠價</label>
+                <input asp-for="SalePrice" class="form-control" required />
+                <span asp-validation-for="SalePrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Number" class="control-label">庫存</label>
+                <input asp-for="Number" class="form-control" type="number" required />
+                <span asp-validation-for="Number" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Detail" class="control-label">詳細:</label>
+                <!-- 下面是使用富文本编辑器支持输入文章内容 -->
+                <script id="container" name="Detail" type="text/plain">@(new HtmlString(Model.Detail))</script>
+                <script type="text/javascript" src="/utf8-net/ueditor.config.js"></script>
+                <script type="text/javascript" src="/utf8-net/ueditor.all.js"></script>
+                <script type="text/javascript" src="/utf8-net/lang/zh-cn/zh-cn.js"></script>
+                <script>
+                    var ue = UE.getEditor("container", {
+                    initialFrameHeight:500
+                    });
+                </script>
+                <!-- 文章内容使用完结 -->
+            </div>
+            <div class="form-group">
+                <label asp-for="Img" class="control-label">封面</label>
+                <input type="file" id="pic" name="pic" class="form-control" accept="image/*"
+                onchange="upload(event)">
+                <input type="hidden" name="Img" id="img" value="@Model.Img" required />
+                <div id="showImg">
+                    <img src="@Model.Img" width="100">
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="State" class="control-label">狀態</label>
+                <select name="state" class="form-control">
+                    @if (Model.State == 1)
+                    {
+                        <option value="1">正常</option>
+                        <option value="0">下架</option>
+                    }
+                    else
+                    {
+                        <option value="0">下架</option>
+                        <option value="1">正常</option>                       
+                    }                                     
+                </select>
+            </div>
+            <input type="hidden" name="CreateTime" value="@Model.Createtime" />
+            <input type="hidden" name="Score" value="@Model.Score" />
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <div class="form-group">
+                <label asp-for="Postage" class="control-label">運費</label>
+                <input asp-for="Postage" class="form-control" required />
+                <span asp-validation-for="Postage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="保存" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    function checkForm()
+    {
+          var price=$("#Price").val();
+          var sprice=$("#SalePrice").val();
+          if(parseFloat(price)<=parseFloat(sprice))
+          {
+                alert("優惠價必須小於原價！");
+                return false;
+            }
+            else
+            {
+                return true;
+          }
+
+    }
+
+    //實現異步上傳
+    function upload(event) {
+        var imgPath = $("#pic").val();
+        console.log(imgPath);
+        //判斷上傳文件的後綴名
+        var strExtension = imgPath.substr(imgPath.lastIndexOf('.') + 1);
+        if (strExtension != 'jpg' && strExtension != 'gif' && strExtension != 'png' && strExtension != 'bmp') {
+            alert("請選擇圖片文件");
+            return;
+        }
+        //實現文件上傳操作
+        if (event.target.files[0].type.search('image') !== -1) {
+            //實現文件圖片的上傳
+            var formData = new FormData($("#myForm")[0]);//用於創建一個文件流對象
+            //formData.append('pic', $("#img")[0]); //添加文件流 （流名稱，流）
+            //console.log(formData);
+            $.ajax({
+                url: "/Upload/file",
+                type: "post",
+                cache: false,
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (res) {
+                    console.log(res);
+                    if (res.trim() == "209") {
+                        alert("請選擇圖片！");
+                        return;
+                    }
+                    if (res.trim() == "300") {
+                        alert("上傳的圖片不能為空圖片！");
+                        return;
+                    }
+                    if (res.trim() == "400") {
+                        alert("上傳的圖片失敗！");
+                        return;
+                    }
+                    //alert("上傳成功！");
+                    $("#showImg").html("<img src='" + res + "' width='150' height='150' /><p style='color:red;'>上傳成功！</p>");
+                    //設置上傳的圖片地址
+                    var res = res.trim(); //去除圖片的前後空白字符
+                    $("#img").val(res);
+                },
+                error: function (res) {
+                    alert("上傳異常！");
+                }
+            });
+        } else {
+            alert('只支持上傳圖片');
+        }
+    }
+</script>
