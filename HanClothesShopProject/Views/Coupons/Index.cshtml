@@ -1,0 +1,121 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.Coupon>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+
+<h1>優惠券管理</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">新增優惠券</a>
+</p>
+<form action="" method="get">
+    優惠券名稱: <input type="text" name="keyword" value="@ViewBag.keyword" class="form-control" style="width:250px; display:inline-block;" />
+    優惠券類型: 
+    <select type="text" name="type" value="@ViewBag.type" class="form-control" style="width:250px; display:inline-block;" />
+        <option value="">全部</option>
+        <option value="折價">折價券</option>
+        <option value="滿減">滿減券</option>
+    </select>
+    <input type="submit" class="btn btn-success" value="查詢 " />
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                優惠券名稱
+            </th>
+            <th>
+                優惠券折價金額
+            </th>
+            <th>
+                優惠券類型
+            </th>
+            <th>
+                優惠券總數
+            </th>
+            <th>
+                優惠券開始時間
+            </th>
+            <th>
+                優惠券結束時間
+            </th>
+            <th>
+                每人可領張數
+            </th>
+            <th>
+                優惠券使用門檻
+            </th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DiscountAmount)
+                </td>
+                <td>
+                    @if (item.DiscountType.Contains("滿減券")) 
+                    {
+                        <b class="btn btn-info">滿減券</b>
+                    }
+                    else
+                    {
+                        <b class="btn btn-warning">折價券</b>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SumCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+                <td>
+                    @if (item.UsedCount == -1) 
+                    {
+                        <b>不限張數</b>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.UsedCount)
+                    }
+                    
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShouldMoney)元 
+            </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info">編輯</a> |                    
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" onclick="return confirm('確認')">刪除</a>
+                </td>
+        </tr>
+}
+    </tbody>
+</table>
+@if (Model.Count() == 0)
+{
+    <h1 align="center">沒有找到優惠券數據</h1>
+}
+
+<ul class="pagination" style="display:flex; justify-content:center;">
+    @if (ViewBag.pageNum == null || ViewBag.pageNum == 0)
+    {
+        <li><a herf="?page=1">1</a></li>
+    }
+    else
+    {
+        @for (var i = 1; i <= ViewBag.pageNum; i++)
+        {
+            <li><a herf="?page=1&keyword=@(ViewBag.keyword)&type=@(ViewBag.type)">@i</a></li>
+        }
+    }
+</ul>

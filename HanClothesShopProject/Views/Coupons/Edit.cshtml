@@ -1,0 +1,72 @@
+﻿@model HanClothesShopProject.Models.Coupon
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>Coupon</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger">優惠券標題:</div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiscountAmount" class="control-label">優惠券抵扣金額(折價券填寫0-1的比例)</label>
+                <input asp-for="DiscountAmount" class="form-control" />
+                <span asp-validation-for="DiscountAmount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiscountType" class="control-label">折價券類型:</label>
+                <select name="DiscountType" class="form-control">
+                    @if (Model.DiscountType.Contains("滿減券"))
+                    {
+                        <option value="滿減券">滿減券</option>
+                        <option value="折價券">折價券</option>
+                    }
+                    else
+                    {                   
+                        <option value="折價券">折價券</option>
+                        <option value="滿減券">滿減券</option>                      
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SumCount" class="control-label">優惠券總數</label>
+                <input asp-for="SumCount" type="number" required class="form-control" />
+                <span asp-validation-for="SumCount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartDate" class="control-label">優惠券開始時間</label>
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndDate" class="control-label">優惠券結束時間</label>
+                <input asp-for="EndDate" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UsedCount" class="control-label">每人限領張數(填寫-1代表無限領取)</label>
+                <input asp-for="UsedCount" required class="form-control" />
+                <span asp-validation-for="UsedCount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ShouldMoney" class="control-label">優惠券門檻:</label>
+                <input asp-for="ShouldMoney" class="form-control" />
+                <span asp-validation-for="ShouldMoney" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="保存" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
