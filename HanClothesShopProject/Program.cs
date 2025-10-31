@@ -1,5 +1,6 @@
 ﻿using HanClothesShopProject.Models;
 using Microsoft.EntityFrameworkCore;
+using UEditorNetCore;
 
 namespace HanClothesShopProject
 {
@@ -17,6 +18,9 @@ namespace HanClothesShopProject
             //添加會話服務
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddSession();
+            //添加ueditor服務
+            builder.Services.AddUEditorService();
+            builder.Services.AddMvc();
 
             //建構一個過程
             var app = builder.Build();
@@ -27,6 +31,8 @@ namespace HanClothesShopProject
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            
             //添加會話使用
             app.UseSession();
             // 將 HTTP 請求重導向 HTTPS

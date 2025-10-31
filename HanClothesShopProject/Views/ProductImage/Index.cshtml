@@ -1,0 +1,51 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.ProductImage>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>商品附加圖管理</h1>
+<div>
+    <a href="/Product/Index" class="btn btn-default">返回</a>
+</div>
+<hr />
+<p>
+    <a href="/ProductImage/Create?pid=@ViewBag.pid"> 新增附加圖</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+               附加圖片
+            </th>
+            <th>
+                對應商品
+            </th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+               <img src=" @Html.DisplayFor(modelItem => item.ImageUrl)"width="100" />
+            </td>
+            <td>
+               商品的ID: @Html.DisplayFor(modelItem => item.PidNavigation.Id)<br />
+                    商品標題: @Html.DisplayFor(modelItem => item.PidNavigation.Title)<br />
+                    主圖:<img src="@Html.DisplayFor(modelItem => item.PidNavigation.Img)"width="100" /> 
+            </td>
+            <td>
+                    <a href="/ProductImage/Edit?pid=@ViewBag.pid&id=@item.Id" class="btn btn-info">編輯01</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" onclick="return confirm('確認刪除該筆資料嗎?')">刪除</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@if (Model.Count() == 0)
+{
+    <h1 align="center">沒有找到附加圖片數據</h1>
+}
+
