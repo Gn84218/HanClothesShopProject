@@ -1,0 +1,70 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.OrderComment>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>訂單評論管理</h1>
+
+<form action="" method="get">
+    評論人:  <input type="text" name="keyword" value="@ViewBag.keyword" class="form-control" style="width:250px; display:inline-block;" />   
+    評論商品:  <input type="text" name="titles" value="@ViewBag.titles" class="form-control" style="width:250px; display:inline-block;">
+    <input type="submit" class="btn btn-success" value="查詢 " /></input>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                評論內容
+            </th>
+            <th>
+                評分
+            </th>
+            <th>
+                評論時間
+            </th>
+            <th>
+                評論訂單
+            </th>
+            <th>
+                評論商品
+            </th>
+            <th>
+                評論人
+            </th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Detail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Score)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Createtime)
+            </td>
+            <td>     
+                    <a href="/Orders/Details?id=@item.Order.OrderNum"></a>
+            </td>
+            <td>
+                    <a href="/Home/Details?id=@item.Pid">
+                        @Html.DisplayFor(modelItem => item.PidNavigation.Id)
+                    </a>
+               
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.User.Id)@item.User.Nickname
+            </td>
+            <td>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" onclick="return confirm('確認刪除該筆資料嗎?')">刪除</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

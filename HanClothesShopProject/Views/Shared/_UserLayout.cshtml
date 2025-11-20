@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="/assets/css/material-design.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/small-n-flat.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/font-awesome.min.css">
-    <title>漢服商場後台管理</title>
+    <title>漢服商城個人頁面</title>
 </head>
 <body class="cm-no-transition cm-1-navbar">
     <div id="cm-menu">
@@ -26,45 +26,11 @@
             <div id="cm-menu-items-wrapper">
                 <div id="cm-menu-scroller">
                     <ul class="cm-menu-items">
-                        <li class="active"><a href="index.html" class="sf-house">管理首頁</a></li>
-                        <li><a href="/User/Index" class="sf-dashboard">用戶管理</a></li>
-                        <!-- 超級管理員為 "2" -->
-                        @{
-                            if (HttpContextAccessor.HttpContext.Session.GetInt32("role") != null
-                                && HttpContextAccessor.HttpContext.Session.GetInt32("role") == 2) {
-                                <li><a href="components-text.html" class="sf-brick">管理員管理</a></li>
-                                }
-                        }
-                        
-                        <li class="cm-submenu">
-                            <a class="sf-window-layout">首頁輪播圖管理 <span class="caret"></span></a>
-                            <ul>
-                                <li><a href="/ImageChart/Create">新增輪播圖</a></li>
-                                <li><a href="/ImageChart/Index">輪播圖管理</a></li>
-
-                            </ul>
-                        </li>
-                        <li class="cm-submenu">
-                            <a class="sf-cat">商品分類管理 <span class="caret"></span></a>
-                            <ul>
-                                <li><a href="/Category/Create">新增分類</a></li>
-                                <li><a href="/Category/Index">分類管理 </a></li>
-
-                            </ul>
-                        </li>
-                        <li><a href="/Article/Index" class="sf-notepad">平台文章</a></li>
-                        <li><a href="/Product/Index" class="sf-notepad">商品管理</a></li>
-                        <li><a href="/Coupons/Index" class="sf-notepad">優惠卷管理</a></li>
-                        <li><a href="/Orders/Index" class="sf-notepad">訂單管理</a></li>
-                        <li><a href="/OrderComment/Index" class="sf-notepad">商品評論管理</a></li>
-                        <li><a href="/ApplyReturn/Index" class="sf-notepad">訂單售後管理</a></li>
-                        <li class="cm-submenu">
-                            <a class="sf-monitor">訂單報表<span class="caret"></span></a> 
-                            <ul>
-                                <li><a href="/Admin/ShopCount">商品統計</a></li>
-                                <li><a href="/Admin/OrderCount">訂單統計</a></li>
-                            </ul>
-                        </li>
+                        <li class="active"><a href="/UserBack/Index" class="sf-house">用戶首頁</a></li>
+                        <li><a href="/ProductSave/Index" class="sf-dashboard">我的收藏 </a> </li>
+                        <li><a href="/UserBack/MyCoupon" class="sf-notepad">我的優惠券</a></li>
+                        <li><a href="/UserOrder/Index" class="sf-notepad">我的訂單</a></li>
+                        <li><a href="/Address/Index" class="sf-notepad">地址管理</a></li>
                     </ul>
                 </div>
             </div>
@@ -80,8 +46,8 @@
             @{
                 <!--如果獲取的session中使用者id不為空-->
                 int count = 0;
-                if (HttpContextAccessor.HttpContext.Session.GetInt32("id") != null) {
-                    int uid = (int)HttpContextAccessor.HttpContext.Session.GetInt32("id");
+                if (HttpContextAccessor.HttpContext.Session.GetInt32("uid") != null) {
+                    int uid = (int)HttpContextAccessor.HttpContext.Session.GetInt32("uid");
                     <!--使用者帳號一致 且未讀取-->
                      count = _context.ChatMessages.Where(p => p.ToUserid == uid && p.IsRead == 0).Count();
                 }
@@ -89,7 +55,7 @@
             }
             <div class="dropdown pull-right">
                 <button class="btn btn-primary md-notifications-white" 
-                      onclick="window.location.href='/Admin/Send'"
+                      onclick="window.location.href='/Home/Send'"
                       data-toggle="dropdown">
                     <span class="label label-danger">@(count!=null?count:0)</span> 
                 </button>             
@@ -100,24 +66,16 @@
                     <li class="disabled text-center">
                         <a style="cursor:default;">
                         <strong>
-                                @if (HttpContextAccessor.HttpContext.Session.GetInt32("role") != null
-                                && HttpContextAccessor.HttpContext.Session.GetInt32("role") == 2)
-                                {
-                                    <b>超級管理員</b>
-                                }
-                                else
-                                {
-                                    <b>管理員</b>
-                                }
+                                <b>(用戶)</b>
                                 @HttpContextAccessor.HttpContext.Session.GetString("nickname")
                         </strong></a>
                     </li>
                     <li class="divider"></li>
                     <li>
-                        <a href="/Admin/Update"><i class="fa fa-fw fa-user"></i> 修改密碼</a>
+                        <a href="/UserBack/Update"><i class="fa fa-fw fa-user"></i> 修改密碼</a>
                     </li>               
                     <li>
-                        <a href="/Login/Logout"><i class="fa fa-fw fa-sign-out"></i>退出系統</a>
+                        <a href="/Login/UserLogout"><i class="fa fa-fw fa-sign-out"></i>退出系統</a>
                     </li>
                 </ul>
             </div>

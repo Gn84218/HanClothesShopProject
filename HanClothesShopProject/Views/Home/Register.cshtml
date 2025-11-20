@@ -1,0 +1,44 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<form onsubmit="return sub()" method="post" action="/Login/DoRegister">
+    <p>
+        手機號:<input type="text" name="phone" id="phone" class="form-control" style="width:250px; display:inline-block;" required />
+    </p>
+    <p>
+        密碼:<input type="password" name="pwd" id="pwd" class="form-control" style="width:250px; display:inline-block;" required />
+    </p>
+    <p>
+        密保:<input type="text" name="mibo" id="mibo" class="form-control" style="width:250px; display:inline-block;" required />
+    </p>
+    <input type="submit" class="btn btn-success" value="註冊 " />
+</form>
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<!--檢查是否甫和輸入條件-->
+<script>
+    function sub() {
+        var phone = $("#phone").val();
+        var pwd = $("#pwd").val();
+
+        if (phone.length == 0) {
+            alert("請輸入手機號");
+            $("#phone").focus();
+            return false;
+        }
+
+        if (!/^\d{10}$/.test(phone)) {
+            alert("請輸入正確手機號碼");
+            $("#phone").focus();
+            return false;
+        }
+
+        if (pwd.length == 0) {
+            alert("請輸入密碼");
+            $("#pwd").focus();
+            return false;
+        }      
+        return true;
+    }
+</script>

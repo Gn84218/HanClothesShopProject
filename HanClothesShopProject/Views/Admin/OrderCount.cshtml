@@ -1,0 +1,136 @@
+﻿@{
+    Layout = "/Views/Shared/_BackLayout.cshtml";
+}
+
+<!-- 注入 Http 上下文物件的介面服務 -->
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<h1>訂單金額統計</h1>
+<div id="app">
+    <div class="row">
+        <form action="" method="get" style="display:flex;flex-wrap:nowrap;line-height:40px;">
+            訂單狀態：
+            <select v-model="form.isPay" class="form-control" style="width:250px;">
+                <option value="-1">全部</option>
+                <option value="0">未支付</option>
+                <option value="1">已支付</option>
+            </select>
+            下單開始時間：
+            <input type="datetime-local" name="nickname" v-model="form.start" class="form-control"
+                   placeholder="下單開始時間" style="width:250px;" />
+            下單結束時間：
+            <input type="datetime-local" name="nickname" v-model="form.end" class="form-control"
+                   placeholder="下單結束時間" style="width:250px;" />
+            <input type="button" v-on:click="search()" value="查詢" class="btn btn-info" />
+        </form>
+    </div>
+
+    <div class="row cm-fix-height">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">訂單金額統計</div>
+                <div class="panel-body">
+                    <!-- ECharts 顯示的容器 -->
+                    <div id="mainBox" style="width:100%;height:400px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/vue.min.js"></script>
+<script src="/js/axios.min.js"></script>
+<script src="/js/echarts.min.js"></script>
+<script>
+    // 這裡用到的是 Vue.js 的知識
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            form: { // 這裡是提交的訂單信息
+                isPay: -1,
+                start: "",
+                end: ""
+            },
+            myChart: null // 儲存 ECharts 實例
+        },
+        created: function () { // 須知，這裡是 created
+            this.search(); // 當 Vue 創建時可以自動觸發異步顯示報表
+        },
+        mounted: function () {
+            var _this = this;
+            // 監聽視窗大小變化
+            window.addEventListener('resize', function () {
+                if (_this.myChart) {
+                    _this.myChart.resize(); // 調整圖表大小
+                }
+            });
+        },
+        methods: { // 須知 methods 裡面是一個物件
+            // 地址列表獲取
+            search: function () {
+                var _this = this;
+                axios.get("/Admin/GetOrderList?isPay=" + this.form.isPay + "&start=" + this.form.start + "&end=" + this.form.end)
+                    .then(function (res) {
+                        var data = res.data.data;
+                        var xdata = []; // 日期
+                        var ydata = []; // 金額
+                        data.forEach(e => {
+                            xdata.push(e.date.split("T")[0]); // 解析日期
+                            ydata.push(e.price);
+                        });
+                        // 顯示 ECharts 使用
+                        _this.myChart = echarts.init(document.getElementById("mainBox")); // 儲存 ECharts 實例
+                        // 配置 ECharts 的加載顯示
+                        var option = {
+                            title: {
+                                text: "訂單金額統計"
+                            },
+                            toolbox: {
+                                show: true, // 顯示工具欄
+                                orient: "vertical", // 垂直方式顯示
+                                itemSize: 18,
+                                itemGap: 20,
+                                right: 20,
+                                feature: {
+                                    saveAsImage: { show: true },
+                                    magicType: {
+                                        type: ["line", "bar", "pie"]
+                                    },
+                                    restore: { show: true }, // 數據顯示後可以重置效果
+                                }
+                            },
+                            legend: {
+                                data: ["金額"]
+                            },
+                            xAxis: {
+                                data: xdata
+                            },
+                            yAxis: {},
+                            series: [{
+                                name: "金額",
+                                type: "bar",
+                                data: ydata,
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true, // 開啟顯示
+                                            position: "top", // 在上面顯示
+                                            textStyle: {
+                                                color: "black",
+                                                fontSize: 16
+                                            }
+                                        }
+                                    }
+                                }
+                            }]
+                        };
+                        // 初始化 ECharts
+                        _this.myChart.setOption(option);
+                    }).catch(function (error) {
+                        console.log(error);
+                        alert("獲取訂單金額統計結果異常！");
+                    });
+            },
+        }
+    });
+</script>

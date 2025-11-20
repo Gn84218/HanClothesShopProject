@@ -46,40 +46,44 @@
 </html>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
-    function sub(){
-          var phone=$("#phone").val();
-          var pwd=$("#pwd").val();
-          if(phone.length==0){
-              alert("請輸入手機號");
-              $("#phone").focus();
-              return false;
-          }
-           if(!/^\d{10}$.test(phone)){
-              alert("請輸入正確手機號碼");
-              $("#phone").focus();
-              return false;
-          }
-           if(pwd.length==0){
-              alert("請輸入密碼");
-              $("#pwd").focus();
-              return false;
-          }
-          //觸發AJAX異步請求實現後端操作
-          $.ajax({
-    url: "/Login/Index",
-    type: "POST",
-    data: { phone: phone, pwd: pwd },
-    success: function(response) {
-       if(response.code==200){
-           window.location.href="/Admin/Index";
-       }
-       else{
-           alert(response.msg) ;
-       }
-    },
-    error: function(xhr) {
-        console.error("後端處理失敗" );
-    }
-});
+    function sub() {
+        var phone = $("#phone").val();
+        var pwd = $("#pwd").val();
+
+        if (phone.length == 0) {
+            alert("請輸入手機號");
+            $("#phone").focus();
+            return false;
+        }
+
+        if (!/^\d{10}$/.test(phone)) {
+            alert("請輸入正確手機號碼");
+            $("#phone").focus();
+            return false;
+        }
+
+        if (pwd.length == 0) {
+            alert("請輸入密碼");
+            $("#pwd").focus();
+            return false;
+        }
+
+        // 觸發AJAX異步請求實現後端操作
+        $.ajax({
+            url: "/Login/Index",
+            type: "POST",
+            data: { phone: phone, pwd: pwd },
+            success: function(response) {
+                if (response.code == 200) {
+                    window.location.href = "/Admin/Index";
+                } else {
+                    alert(response.msg);
+                }
+            },
+            error: function(xhr) {
+                console.error("後端處理失敗");
+            }
+        });
     }
 </script>
+

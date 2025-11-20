@@ -1,0 +1,155 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.ApplyReturn>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>售後管理</h1>
+
+<form action="" method="get">
+    申請售後人名: <input type="text" name="nickname" value="@ViewBag.nickname" class="form-control" style="width:250px; display:inline-block;" />
+    訂單編號: <input type="text" name="keyword" value="@ViewBag.keyword" class="form-control" style="width:250px; display:inline-block;" />
+    <input type="submit" class="btn btn-success" value="查詢 " />
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                商家訊息
+            </th>
+            <th>
+                退貨原因
+            </th>
+            <th>
+                退貨說明
+            </th>
+            <th>
+                狀態
+            </th>
+            <th>
+                申請時間
+            </th>
+            <th>
+                訂單耗
+            </th>
+            <th>
+                申請售後商品名稱
+            </th>
+            <th>
+                申請人
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BusinessMark)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReturnReason)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserMark)
+                </td>
+                <td>
+                    @if (item.Status == 0)
+                    {
+                        <b class="btn btn-info">待處理</b>
+                    }
+                    else if(item.Status==1 )
+                    {
+                        <b class="btn btn-success">商家同意退款</b>
+                    }
+                    else
+                    {
+                        <b class="btn btn-danger">商家不意退款</b>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Createtime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.OrderNum)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PidNavigation.Title)
+                    (金額: @item.PidNavigation.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UidNavigation.Id)@item.UidNavigation.Nickname
+                </td>
+                <td>
+                    @if (item.Status == 0)
+                    {
+                        <button onclick="send(@item.Id,1)" class="btn btn-success">同意退款</button>
+                        <button onclick="send(@item.Id,2)" class="btn btn-danger">不同意退款</button>
+                    }
+                    else 
+                    {
+                        <a>您以處裡售後狀況</a>
+                    }
+                </td>
+        </tr>
+}
+    </tbody>
+</table>
+@if (Model.Count() == 0)
+{
+    <h1 align="center">沒有找到售後數據</h1>
+}
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+    }
+</style>"
+<ul class="pagination" ">
+@if (ViewBag.pageNum == null || ViewBag.pageNum == 0)
+{
+        <li><a href="?page=1">1</a></li>
+}
+else
+{
+    @for (var i = 1; i <= ViewBag.pageNum; i++)
+    {
+            <li><a href="?page=@i&keyword=@(ViewBag.Keyword)&nickname=@(ViewBag.Nickname)">@i</a></li>
+    }
+}
+</ul>
+<script>
+    function send(id, state) {
+        var mark = prompt("請輸入商家回復的內容:");
+
+        // 檢查 mark 是否為 null 或空字符串
+        if (mark === null || mark.length === 0) {
+            alert("商家回復不能為空");
+            return;
+        }
+        $.ajax({
+            url:"/ApplyReturn/Edit",            
+            type: "post",            
+            data: {
+                id: id, 
+                state: state,
+                mark: mark 
+            },
+            success: function (data) {
+                if (data.code == 200) {
+                    window.location.reload();
+                } else {
+                    alert(data.msg);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("發生錯誤: " + textStatus + " - " + errorThrown);
+            }
+        });
+    }
+</script>
+
+

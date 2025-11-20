@@ -1,0 +1,75 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.ProductSave>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<h1>商品收藏管理</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<form action="" method="get">
+    商品名稱: <input type="text" name="keyword" value="@ViewBag.keyword" class="form-control" style="width:250px; display:inline-block;" />
+    <input type="submit" class="btn btn-success" value="查詢 " />
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                收藏時間
+            </th>
+            <th>
+                收藏的商品
+            </th>
+            <th>
+                收藏人
+            </th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Createtime)
+            </td>
+            <td>
+                <a href="/Product/Details/@item.Pid">
+                        <img src="@item.PidNavigation.Img" width="100" />
+                        @Html.DisplayFor(modelItem => item.PidNavigation.Title)
+                        (優惠價格:<b>@item.PidNavigation.SalePrice</b> 元 | 原價:<s>@item.PidNavigation.Price</s> 元)
+
+                </a>
+               
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UidNavigation.Nickname)
+            </td>
+            <td>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" onclick="return confirm('確認')">刪除</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@if (Model.Count() == 0)
+{
+    <h1 align="center">沒有找到數據</h1>
+}
+
+<ul class="pagination" style="display:flex; justify-content:center;">
+    @if (ViewBag.pageNum == null || ViewBag.pageNum == 0)
+    {
+        <li><a herf="?page=1">1</a></li>
+    }
+    else
+    {
+        @for (var i = 1; i <= ViewBag.pageNum; i++)
+        {
+            <li><a herf="?page=1&keyword=@(ViewBag.keyword)">@i</a></li>
+        }
+    }
+</ul>

@@ -1,0 +1,65 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="text-center" style="padding:90px 0 30px 0;background:#fff;border-bottom:1px solid #ddd">
+    <img src="assets/img/logo-big.svg" width="300" height="45">
+    <h1> 漢服商城會員登入 </h1>
+</div>
+<form onsubmit="return sub()" method="post" action="/Login/DoLogin">
+    <p>
+        手機號:<input type="text" name="phone" id="phone" class="form-control" style="width:250px; display:inline-block;" required />
+    </p>
+    <p>
+        密碼:<input type="text" name="pwd" id="pwd" class="form-control" style="width:250px; display:inline-block;" required />
+    </p>
+    <input type="submit" class="btn btn-success" value="登入 " />
+</form>
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<!--.ajax異步請求 不需要刷新頁面 也能提交數據-->
+<script>
+    function sub() {
+        var phone = $("#phone").val();
+        var pwd = $("#pwd").val();
+
+        if (phone.length == 0) {
+            alert("請輸入手機號");
+            $("#phone").focus();
+            return false;
+        }
+
+        if (!/^\d{10}$/.test(phone)) {
+            alert("請輸入正確手機號碼");
+            $("#phone").focus();
+            return false;
+        }
+
+        if (pwd.length == 0) {
+            alert("請輸入密碼");
+            $("#pwd").focus();
+            return false;
+        }
+
+        // 觸發 AJAX 異步請求實現後端操作
+        $.ajax({
+            url: "/Login/DoLogin",
+            type: "POST",
+            data: { 
+                phone: phone, 
+                pwd: pwd 
+            },
+            success: function(res) {
+                if (res.code == 200) {
+                    window.location.href = "/UserBack/Index";
+                } else {
+                    alert(res.msg);
+                }
+            },
+            error: function(xhr) {
+                console.error("後端處理失敗");
+                alert("請求失敗，請稍後再試。");
+            }
+        });
+    }
+</script>

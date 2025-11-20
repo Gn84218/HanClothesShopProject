@@ -1,0 +1,294 @@
+﻿
+@model HanClothesShopProject.Models.Order
+<!--注視數據庫對象上下文使用-->
+@inject HanClothesShopProject.Models.dbContext _context
+@using Microsoft.EntityFrameworkCore
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<h1>訂單詳細資訊</h1>
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-secondary">返回</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>訂單基本資訊</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-2">訂單編號</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.OrderNum)</dd>
+
+            <dt class="col-sm-2">總金額</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.SumPrice)</dd>
+
+            <dt class="col-sm-2">備註</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.Mark)</dd>
+
+            <dt class="col-sm-2">創建時間</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.Createtime)</dd>
+
+            <dt class="col-sm-2">是否付款</dt>
+            <dd class="col-sm-10">
+                @if (Model.IsPay == 1)
+                {
+                    <span class="badge bg-success">已付款</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">未付款</span>
+                }
+            </dd>
+
+            <dt class="col-sm-2">訂單狀態</dt>
+            <dd class="col-sm-10">
+                @switch (Model.State)
+                {
+                    case 1:
+                        <span class="badge bg-danger">未發貨</span>
+                        break;
+                    case 2:
+                        <span class="badge bg-success">已發貨</span>
+                        break;
+                    case 3:
+                        <span class="badge bg-info">已簽收</span>
+                        break;
+                    case 4:
+                        <span class="badge bg-primary">已評論</span>
+                        break;
+                    case 5:
+                        <span class="badge bg-warning">退貨中</span>
+                        break;
+                    case 6:
+                        <span class="badge bg-success">訂單已完成</span>
+                        break;
+                    default:
+                        <span class="badge bg-danger">訂單已取消</span>
+                        break;
+                }
+            </dd>
+
+            <dt class="col-sm-2">付款方式</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.PayWay)</dd>
+
+            <dt class="col-sm-2">地址資訊</dt>
+            <dd class="col-sm-10">
+                @{
+                    Address addr = _context.Addresses.Where(p => p.Id == Model.AddressId).FirstOrDefault();
+                }
+                @if (addr != null)
+                {
+                    <p>收貨人姓名: @addr.Name</p>
+                    <p>收貨人電話: @addr.Phone</p>
+                    <p>收貨人地址: @addr.Province@addr.City@addr.Area@addr.Detail</p>
+                }
+            </dd>
+
+            <dt class="col-sm-2">折扣金額</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.DecMoney)</dd>
+
+            <dt class="col-sm-2">是否使用優惠券</dt>
+            <dd class="col-sm-10">
+                @{
+                    GetCoupon gc = _context.GetCoupons.Include(prop=>prop.Coupon).Where(p => p.Id == Model.CouponId).FirstOrDefault();
+                }
+                @if (gc != null)
+                {
+                    <h5>@gc.Coupon.Title</h5>
+                    <p>
+                        @if (gc.Coupon.DiscountType.Contains("滿減券"))
+                        {
+                            <span class="badge bg-info">滿@gc.Coupon.ShouldMoney 元減@gc.Coupon.DiscountAmount 元</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-info">滿@gc.Coupon.ShouldMoney 元打@gc.Coupon.DiscountAmount 折</span>
+                        }
+                        <span class="badge bg-secondary">有效期至: @gc.Coupon.EndDate</span>
+                    </p>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">未使用優惠券</span>
+                }
+            </dd>
+
+            <dt class="col-sm-2">快遞名稱</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.ExpressName)</dd>
+
+            <dt class="col-sm-2">快遞單號</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.ExpressNumber)</dd>
+
+            <dt class="col-sm-2">下單人訊息</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.UidNavigation.Nickname)</dd>
+
+            @if (Model.IsPay == 1 && Model.State == 2)
+            {
+                <dt>訂單狀態操作:</dt>
+                <dd><a onclick="send(@Model.Id,3)" class="btn btn-danger">已簽收</a> </dd>
+            }
+            @if (Model.IsPay == 1 && Model.State != 0)
+            {
+                <dt>訂單狀態操作:</dt>
+                <dd> <a onclick="send(@Model.Id,0)" class="btn btn-default">取消訂單</a> </dd>
+            }
+            <td>商品售後操作:</td>
+            <dd style="padding-top:10px;">
+                @if (Model.IsPay == 1 && Model.State <= 3)
+                {
+                    <button onclick="returnShop(@Model.Id,@Model.OrderNum)" class="btn btn-danger">申請售後</button>
+                }
+                else
+                {
+                    <span> 不存在售後服務</span>
+                }
+                <button onclick="see()" class="btn btn-info">查看售後狀態</button>
+            </dd>
+        </dl>
+    </div>
+</div>
+<!--下面是新增售後狀態框-->
+<div class="modal" >
+<div class="modal-dialog">
+    <div class="modal-content" style="width:1000px;margin-top:50px">
+        <!--標題部分-->
+        <div class="modal-header">
+            <button onclick="hides()" class="close">&times;</button>
+            <h4 class="modal-title">售後狀態</h4>
+        </div>
+        <!--主體部分-->
+        <div class="modal-body">
+            @if (ViewBag.turnList.Count == 0)
+            {
+                <b>目前沒有售後進度</b>
+            }
+            else 
+            {
+                <table class="table">
+                    <tr>
+                        <th>訂單號</th>
+                        <th>退貨原因</th>
+                        <th>申請原因說明</th>
+                        <th>商品圖片</th>
+                        <th>商品標題</th>
+                        <th>商品價格</th>
+                        <th>售後狀態</th>
+                        <th>商家回復</th>
+                        <th>申請時間</th>
+                    </tr>
+                    @foreach (ApplyReturn item in ViewBag.turnList)
+                    {
+                        <tr>
+                            <th>@Model.OrderNum</th>
+                            <th>@item.ReturnReason</th>
+                            <th>@item.UserMark</th>
+                            <th><img src="@item.PidNavigation.Img" width="100" /></th>
+                            <th>@item.PidNavigation.Title</th>
+                            <th>@item.PidNavigation.SalePrice (<s>@item.PidNavigation.Price</s>)</th>
+                            <th>
+                                @if (item.Status == 0)
+                                {
+                                    <b class="btn-info">商家審核中</b>
+                                }
+                                else if (item.Status == 1)
+                                {
+                                    <b class="btn-success">商家同意退款</b>
+                                }
+                                else {<b class="btn-danger">商家不同意</b> }
+                            </th>
+                                    <th>@item.BusinessMark</th>
+                                    <th>@item.Createtime</th>
+                         </tr>
+                }
+                </table>
+            }
+        </div>
+    </div>
+</div>
+</div>
+
+
+<h2>訂單商品詳情</h2>
+<div class="card">
+    <div class="card-body">
+        <table class="table-hover table">
+            <thead>
+                <tr>
+                    <th>商品圖片</th>
+                    <th>商品名稱</th>
+                    <th>商品價格</th>
+                    <th>商品數量</th>
+                    <th>運費</th>
+                    <th>總計</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (OrdersDetail item in ViewBag.detaiList)
+                {
+                    <tr>
+                        <td><img src="@item.PidNavigation.Img" class="img-thumbnail" width="100" height="100" /></td>
+                        <td>@item.Title</td>
+                        <td>@item.Price</td>
+                        <td>@item.Count</td>
+                        <td>@item.PidNavigation.Postage</td>
+                        <td>@(item.SumPrice + item.PidNavigation.Postage) 元</td>
+                        <td>
+                            @if (item.Order.IsPay == 1 && item.Order.State == 3)
+                            {
+                                <a href="/Home/Details/@item.PidNavigation.Id&iod=@item.Order.OrderNum" class="btn btn-info">評論</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<!--.ajax異步請求 不需要刷新頁面 也能提交數據-->
+<script>
+    function see() {
+            //模態框彈出顯示
+            $(".modal").show(500)
+    }
+     function hides() {   
+             //隱藏
+            $(".modal").hide(500);
+    }
+    function returnShop(id,orderNum) {
+        window.location.href="/UserOrder/ApplyReturn?id="+id+"&orderNum="+orderNum;      
+        }
+    function send(id,state) {
+        if(state==0){
+           if(!confirm("確定要取消訂單嗎?")){            
+            return false; //不往後執行 直接攔截
+           }
+        }
+        $.ajax({
+            type: "post",
+            url: "/UserOrder/Send",
+            data: { id: id,
+                   state:state
+                  },
+            success: function (data) {
+                if (data.code == 200) {
+                   window.location.reload();
+                }
+                else {
+                    alert(data.msg);
+                }
+            },
+            error: function () {
+                alert("發生錯誤");
+            }
+
+        });
+    }
+</script>

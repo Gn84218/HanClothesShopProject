@@ -9,6 +9,7 @@ using HanClothesShopProject.Models;
 
 namespace HanClothesShopProject.Controllers
 {
+    //商品屬性管理
     public class ProductAttributeController : Controller
     {
         private readonly dbContext _context;

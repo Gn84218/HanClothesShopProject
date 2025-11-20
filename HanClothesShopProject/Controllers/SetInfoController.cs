@@ -9,6 +9,7 @@ using HanClothesShopProject.Models;
 
 namespace HanClothesShopProject.Controllers
 {
+    // 退貨設定管理
     public class SetInfoController : Controller
     {
         private readonly dbContext _context;

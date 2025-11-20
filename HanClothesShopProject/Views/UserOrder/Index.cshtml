@@ -1,0 +1,210 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.Order>
+<!--注視數據庫對象上下文使用-->
+@inject HanClothesShopProject.Models.dbContext _context
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<h1>我的訂單管理</h1>
+
+<!-- 查詢表單 -->
+<form action="" method="get" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+    <div style="flex: 1 1 200px;">
+        訂單編號: <input type="text" name="keyword" value="@ViewBag.keyword" class="form-control" />
+    </div>
+    <div style="flex: 1 1 200px;">
+        支付狀態:
+        <select name="isPay" class="form-control">
+            <option value="-1">全部</option>
+            <option value="1">已付款</option>
+            <option value="2">未付款</option>
+        </select>
+    </div>
+    <div style="flex: 1 1 200px;">
+        訂單狀態:
+        <select name="steat" class="form-control">
+            <option value="-1">全部</option>
+            <option value="0">已取消</option>
+            <option value="1">未發貨</option>
+            <option value="2">已發貨</option>
+            <option value="3">已簽收</option>
+            <option value="4">已評論</option>
+            <option value="5">退貨中</option>
+            <option value="6">訂單已完成</option>
+        </select>
+    </div>
+    <div style="flex: 0 0 auto;">
+        <input type="submit" class="btn btn-success" value="查詢" />
+    </div>
+</form>
+
+<!-- 訂單表格 -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>訂單編號</th>
+            <th>訂單金額</th>
+            <th>訂單備註</th>
+            <th>下單時間</th>
+            <th>支付狀態</th>
+            <th>訂單狀態</th>
+            <th>支付方式</th>
+            <th>下單地址</th>
+            <th>優惠金額</th>
+            <th>是否使用優惠券</th>
+            <th>宅配公司名稱</th>
+            <th>宅配編號</th>
+            <th>下單人</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.OrderNum)</td>
+                <td>@Html.DisplayFor(modelItem => item.SumPrice)</td>
+                <td>@Html.DisplayFor(modelItem => item.Mark)</td>
+                <td>@Html.DisplayFor(modelItem => item.Createtime)</td>
+                <td>
+                    @if (item.IsPay == 1)
+                    {
+                        <b class="btn btn-success">已付款</b>
+                    }
+                    else
+                    {
+                        <b class="btn btn-danger">未付款</b>
+                    }
+                </td>
+                <td>
+                    @switch (item.State)
+                    {
+                        case 1:
+                            <b class="btn btn-danger">未發貨</b>
+                            break;
+                        case 2:
+                            <b class="btn btn-success">已發貨</b>
+                            break;
+                        case 3:
+                            <b class="btn btn-info">已簽收</b>
+                            break;
+                        case 4:
+                            <b class="btn btn-primary">已評論</b>
+                            break;
+                        case 5:
+                            <b class="btn btn-default">退貨中</b>
+                            break;
+                        case 6:
+                            <b class="btn btn-success">訂單已完成</b>
+                            break;
+                        default:
+                            <b class="btn btn-danger">訂單已取消</b>
+                            break;
+                    }
+                </td>
+                <td>
+                    @if (item.IsPay == 1)
+                    {
+                        <b class="btn btn-success">已付款</b>
+                    }
+                    else
+                    {
+                        <b class="btn btn-danger">未付款</b>
+                    }
+                </td>
+                <td>
+                    @{
+                        Address addr = _context.Addresses.Where(p => p.Id == item.AddressId).FirstOrDefault();
+                    }
+                    @if (addr != null)
+                    {
+                        <p>收貨人姓名: @addr.Name</p>
+                        <p>收貨人電話: @addr.Phone</p>
+                        <p>收貨人地址: @addr.Province@addr.City@addr.Area@addr.Detail</p>
+                    }
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.DecMoney)元</td>
+                <td>
+                    @if (item.CouponId != 0)
+                    {
+                        <b class="btn btn-success">已使用優惠券</b>
+                    }
+                    else
+                    {
+                        <b class="btn btn-danger">未使用優惠券</b>
+                    }
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.ExpressName)</td>
+                <td>@Html.DisplayFor(modelItem => item.ExpressNumber)</td>
+                <td>@Html.DisplayFor(modelItem => item.UidNavigation.Nickname)</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">訂單詳細</a> |
+                    @if (item.IsPay == 1 && item.State == 2)
+                    {
+                        <a onclick="send(@item.Id,3)" class="btn btn-danger">已簽收</a>
+                    }
+                    @if(item.IsPay==1&&item.State!=0)
+                    {
+                        <a onclick="send(@item.Id,0)" class="btn btn-danger">取消訂單</a>
+                    }
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" onclick="return confirm('確認刪除該筆資料嗎?')">刪除</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.Count() == 0)
+{
+    <h1 align="center">沒有找到訂單數據</h1>
+}
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+    }
+</style>"
+<ul class="pagination" ">
+@if (ViewBag.pageNum == null || ViewBag.pageNum == 0)
+{
+        <li><a href="?page=1">1</a></li>
+}
+else
+{
+    @for (var i = 1; i <= ViewBag.pageNum; i++)
+    {
+            <li><a href="?page=@i&keyword=@(ViewBag.Keyword)&nickname=@(ViewBag.Nickname)&state=@(ViewBag.State)&isPay=@(ViewBag.IsPay)">@i</a></li>
+    }
+}
+</ul>
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<!--.ajax異步請求 不需要刷新頁面 也能提交數據-->
+<script>
+    function send(id,state) {      
+        if(state==0){
+            if(!confirm("確定要取消訂單嗎"))
+                return false;//不往後執行 直接攔截
+        }
+ 
+        $.ajax({
+            type: "post",
+            url: "/UserOrder/Send",
+            data: { id: id,
+                   state:state
+                  },
+            success: function (data) {
+                if (data.code == 200) {                   
+                   window.location.reload();
+                }
+                else {
+                    alert(data.msg);
+                }
+            },
+            error: function () {
+                alert("發生錯誤");
+            }
+
+        });
+    }
+</script>

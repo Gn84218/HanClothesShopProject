@@ -11,6 +11,7 @@ using System.Collections;
 
 namespace HanClothesShopProject.Controllers
 {
+    //商品管理
     public class ProductController : Controller
     {
         private readonly dbContext _context;

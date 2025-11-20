@@ -7,7 +7,7 @@ using System.Text;
 
 namespace HanClothesShopProject.Controllers
 {
-    //一般用戶 登入註冊控制器
+    //登入器以及登出x2(一般會員 和 超級管理員) && 一般會員註冊 
     public class LoginController : Controller
     {
         private readonly dbContext _dbContext;
@@ -20,16 +20,18 @@ namespace HanClothesShopProject.Controllers
           _dbContext=dbContext;
             _httpContextAccessor = HttpContextAccessor;
         }
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
+        [HttpPost]
         public IActionResult Index(string phone ,string pwd)
         {
             //查詢帳號密碼是否一致
             string newPwd = PasswordHelper.HashPasswordWithMD5(pwd, PasswordHelper.GenerateSalt());
             //取出 數據庫 帳號符合輸入帳號 密碼符合加密後密碼 的第一筆資料
-            User info = _dbContext.Users.Where(p => p.Phone == phone && p.Pwd == newPwd).FirstOrDefault();
+            User info = _dbContext.Users.Where(p => p.Phone == phone && p.Pwd == newPwd).Where(p=>p.Role==2|| p.Role == 1).FirstOrDefault();
 
             if (info != null)
             {
@@ -67,7 +69,10 @@ namespace HanClothesShopProject.Controllers
                 //登入成功 使用 Session 記住當前訊息
                 _httpContextAccessor.HttpContext.Session.SetInt32("uid", info.Id);               
                 _httpContextAccessor.HttpContext.Session.SetString("nickname", info.Nickname);
-                _httpContextAccessor.HttpContext.Session.SetString("img", info.Img);
+                if (info.Img != null)
+                {
+                    _httpContextAccessor.HttpContext.Session.SetString("img", info.Img);
+                }
                 return Ok(new { code = 200, msg = "login success" });
             }
             return Ok(new { code = 201, msg = "帳號或密碼錯誤" });
@@ -128,7 +133,7 @@ namespace HanClothesShopProject.Controllers
             _httpContextAccessor.HttpContext.Session.Remove("nickname");
             _httpContextAccessor.HttpContext.Session.Remove("img");
             //跳回登入介面
-            return Redirect("/Home/Index");
+            return Redirect("/Home/Login");
         }
     }
 }

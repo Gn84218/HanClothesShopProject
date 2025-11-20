@@ -1,0 +1,151 @@
+﻿@model HanClothesShopProject.Models.User
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_BackLayout.cshtml";
+}
+
+<h1>編輯我的訊息</h1>
+
+
+<div class="row">
+    <div class="col-md-4">
+        <!--onsubmit="return checkForm()" 提交事件 驗證表單有沒有錯 -->
+        <form onsubmit="return checkForm()" id="myForm" asp-action="Update">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="Role" value="@Model.Role" />
+            <div class="form-group">
+                <label asp-for="Phone" class="control-label">手機號(使用者帳號):</label>
+                <input  value="@Model.Phone" type="text" class="form-control" disabled />
+                <input name="Phone" id="Phone" value="@Model.Phone" type="hidden" class="form-control" required="true" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pwd" class="control-label">密碼:</label>
+                <input name="Pwd" value="@Model.Pwd" type="password" class="form-control" required="true" />
+                <input type="hidden" name="oldPwd" value="@Model.Pwd" />
+                <span asp-validation-for="Pwd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nickname" class="control-label">名稱:</label>
+                <input asp-for="Nickname" class="form-control" required="true" />
+                <span asp-validation-for="Nickname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Sex" class="control-label">性別:</label>
+                <select name="Sex" class="form-control">
+                    @if (Model.Sex.Contains('男'))
+                    {
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    }
+                    else
+                    {                    
+                        <option value="女">女</option>
+                        <option value="男">男</option>                       
+                    }
+
+                </select>
+                <span asp-validation-for="Sex" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Introduce" class="control-label">自我介紹</label>
+                <input asp-for="Introduce" class="form-control" required="true" />
+                <span asp-validation-for="Introduce" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Age" class="control-label">年齡</label>
+                <input asp-for="Age" class="form-control" required="true" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Img" class="control-label">個人照</label>
+                <input type="file" id="pic" name="pic" class="form-control" accept="image/*"
+                       onchange="upload(event)">
+                <input type="hidden" name="Img" id="img" value="" required />
+                <div id="showImg">
+                    <img src="@Model.Img" width="100" height="100" />
+                </div>
+
+            </div>
+            <div class="form-group">
+                <label asp-for="Mibao" class="control-label">密保(用於找回密碼):</label>
+                <input asp-for="Mibao" class="form-control" required="true" />
+                <span asp-validation-for="Mibao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="更改" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    function checkForm()
+    {
+          var phone=$("#Phone").val();
+           if(!/^\d{10}$/.test(phone))
+           {
+              alert("帳號必須是有效手機號");
+              $("#Phone").focus();
+              return false;
+           }
+              return true;
+    }
+
+    //實現異步上傳
+    function upload(event) {
+        var imgPath = $("#pic").val();
+        console.log(imgPath);
+        //判斷上傳文件的後綴名
+        var strExtension = imgPath.substr(imgPath.lastIndexOf('.') + 1);
+        if (strExtension != 'jpg' && strExtension != 'gif' && strExtension != 'png' && strExtension != 'bmp') {
+            alert("請選擇圖片文件");
+            return;
+        }
+        //實現文件上傳操作
+        if (event.target.files[0].type.search('image') !== -1) {
+            //實現文件圖片的上傳
+            var formData = new FormData($("#myForm")[0]);//用於創建一個文件流對象
+            //formData.append('pic', $("#img")[0]); //添加文件流 （流名稱，流）
+            //console.log(formData);
+            $.ajax({
+                url: "/Upload/file",
+                type: "post",
+                cache: false,
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (res) {
+                    console.log(res);
+                    if (res.trim() == "209") {
+                        alert("請選擇圖片！");
+                        return;
+                    }
+                    if (res.trim() == "300") {
+                        alert("上傳的圖片不能為空圖片！");
+                        return;
+                    }
+                    if (res.trim() == "400") {
+                        alert("上傳的圖片失敗！");
+                        return;
+                    }
+                    //alert("上傳成功！");
+                    $("#showImg").html("<img src='" + res + "' width='150' height='150' /><p style='color:red;'>上傳成功！</p>");
+                    //設置上傳的圖片地址
+                    var res = res.trim(); //去除圖片的前後空白字符
+                    $("#img").val(res);
+                },
+                error: function (res) {
+                    alert("上傳異常！");
+                }
+            });
+        } else {
+            alert('只支持上傳圖片');
+        }
+    }
+</script>
+
+

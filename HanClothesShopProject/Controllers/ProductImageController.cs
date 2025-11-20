@@ -10,6 +10,7 @@ using System.Net.NetworkInformation;
 
 namespace HanClothesShopProject.Controllers
 {
+    //商品附加圖片管理
     public class ProductImageController : Controller
     {
         private readonly dbContext _context;

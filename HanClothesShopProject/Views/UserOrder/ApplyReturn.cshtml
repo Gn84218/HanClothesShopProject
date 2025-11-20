@@ -1,0 +1,96 @@
+﻿@model IEnumerable<HanClothesShopProject.Models.OrdersDetail>
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<h1>申請售後</h1>
+
+<div>
+    <a asp-action="Index" class="btn btn-default">返回</a>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>申請售後說明:如有商品問題,可與客服人員溝通</h2>
+        <p>下面是退貨商家地址:</p>
+        <ul>
+            @foreach (ReturnSet item in ViewBag.setInfo)
+            {
+                <li>@(item.Province)@(item.City)@(item.Area)@(item.Detail)@(item.Name),@(item.Phone)</li>
+            }
+        </ul>
+
+        <!--onsubmit="return checkForm()" 提交事件 驗證表單有沒有錯 -->
+        <form onsubmit="return checkForm()" method="post" id="myForm" asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">退貨訂單:</label>
+                    @ViewBag.orderNum
+            </div>
+            <div class="form-group">
+                <label class="control-label">退貨商品選擇:</label>
+                    <select id="turnShop" class="form-control">
+                        @foreach (OrdersDetail item in Model)
+                        {
+                        <option value="@item.Pid">@item.Title</option>
+                        }
+                        
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">退貨原因:</label>
+                <select id="returnReason" class="form-control">
+                    <option value="商品問題,僅退款">商品問題,僅退款</option>
+                    <option value="商品調換,僅退貨">商品調換,僅退貨</option>
+                    <option value="其他">其他</option>
+                    </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">申請說明原因:</label>
+                <input id="mark" class="form-control" style="width:100%;" />
+            </div>
+            
+            <div class="form-group">
+                <input type="button" value="提交申請" onclick="sub()" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script>
+   function sub(){
+   var pid=$("#turnShop").val();
+   var reason=$("#returnReason").val();
+    var mark=$("#mark").val();
+     if(mark.length==0){
+         alert("請輸入申請說明原因");       
+         return false;
+     }
+      $.ajax({
+             url:"/UserOrder/Apply",
+             type:"POST",
+             data:{
+                 pid:pid,
+                 ReturnReason:reason,
+                 UserMark:mark,
+                 OrderId:@Model.FirstOrDefault().OrderId
+             },
+             success:function(res){
+                 if(res.code==200){
+                     alert("申請退貨成功!");                     
+                 }else{
+                     alert(res.msg);
+                 }
+             },
+             error:function(res){
+                  alert("後端處理失敗");
+             }
+         });
+
+   }
+</script>
+
+

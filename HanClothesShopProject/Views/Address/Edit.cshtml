@@ -1,0 +1,136 @@
+﻿@model HanClothesShopProject.Models.Address
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+<h2>編輯收貨地址</h2>
+<a asp-action="Index" class="btn btn-default">回傳清單</a>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form id="myForm" onsubmit="return checkForm()" asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Province" class="control-label">省份</label>
+                <select class="form-control" name="Province" id="province">
+                    <option value="">請選擇省份</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label">城市</label>
+                <select class="form-control" name="City" id="city">
+                    <option value="">請選擇城市</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Area" class="control-label">區域</label>
+                <select class="form-control" name="Area" id="county">
+                    <option value="">請選擇區縣</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Detail" class="control-label">收貨詳細地址</label>
+                <input asp-for="Detail" class="form-control" required />
+                <span asp-validation-for="Detail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">收貨人姓名</label>
+                <input asp-for="Name" class="form-control" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone" class="control-label">收貨電話</label>
+                <input asp-for="Phone" class="form-control" required />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mark" class="control-label">備註</label>
+                <input asp-for="Mark" class="form-control" />
+                <span asp-validation-for="Mark" class="text-danger"></span>
+            </div>
+            <!-- 編輯的隱藏值 -->
+            <input type="hidden" name="createtime" value="@Model.Createtime" />
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="Uid" value="@Model.Uid" />
+
+            <!-- 編輯的隱藏值 -->
+            <div class="form-group">
+                <input type="submit" value="編輯" class="btn btn-default" />
+            </div>
+        </form>
+        <input type="hidden" id="pro" value="@Model.Province">
+        <input type="hidden" id="ct" value="@Model.City">
+        <input type="hidden" id="ar" value="@Model.Area">
+    </div>
+</div>
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // 載入地址數據
+        $.getJSON('/js/twmap.json', function (addressData) {
+            // 初始化省份選項
+            $.each(addressData, function (province, cities) {
+                $('#province').append($('<option></option>').val(province).text(province));
+            });
+
+            // 監聽省份選擇框的變化
+            $('#province').change(function () {
+                var province = $(this).val();
+                var cities = addressData[province] || {};
+
+                // 清空城市選項
+                $('#city').empty().append($('<option></option>').val('').text('請選擇城市'));
+
+                // 添加城市選項
+                $.each(cities, function (city, counties) {
+                    $('#city').append($('<option></option>').val(city).text(city));
+                });
+
+                // 觸發城市選擇框的change事件，以便初始化區縣選項（如果已選擇城市）
+                if ($('#city option:selected').val()) {
+                    $('#city').trigger('change');
+                }
+
+                // 如果已經選擇了城市，則觸發城市的change事件以初始化區縣選項
+                if ($('#city option:contains(' + $("#ct").val() + ')').length > 0) {
+                    $('#city').val($("#ct").val()).change();
+                }
+            }).trigger('change'); // 觸發省份選擇框的change事件以初始化城市選項
+
+            // 監聽城市選擇框的變化
+            $('#city').change(function () {
+                var city = $(this).val();
+                var province = $('#province').val();
+                var counties = addressData[province][city] || [];
+
+                // 清空區縣選項
+                $('#county').empty().append($('<option></option>').val('').text('請選擇區縣'));
+
+                // 添加區縣選項
+                $.each(counties, function (index, county) {
+                    $('#county').append($('<option></option>').val(county).text(county));
+                });
+
+                // 如果已經選擇了區縣，則設置區縣select的選中狀態
+                if ($('#county option:contains(' + $("#ar").val() + ')').length > 0) {
+                    $('#county').val($("#ar").val());
+                }
+            });
+
+            // 根據數組中的值設置省份select的選中狀態
+            if ($('#province option:contains(' + $("#pro").val() + ')').length > 0) {
+                $('#province').val($("#pro").val()).change();
+            }
+        });
+    });
+
+    function checkForm() {
+        var phone = $("#Phone").val();
+        if (!/^\d{10}$/.test(phone)) { // 簡單的手機號校驗，假設為11位數字
+            alert('收貨手機號碼格式錯誤！');
+            $('#Phone').focus();
+            return false;
+        }
+        return true;
+    }
+</script>

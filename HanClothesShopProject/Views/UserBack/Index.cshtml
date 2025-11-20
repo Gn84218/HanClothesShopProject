@@ -1,0 +1,86 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject HanClothesShopProject.Models.dbContext _context
+
+@{
+    Layout = "/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">歡迎進入商城</div>
+    <div class="panel-body">
+        <h1 > 歡迎進入漢服商城</h1>
+        <p>
+           歡迎您 (用戶) @HttpContextAccessor.HttpContext.Session.GetString("nickname")
+        </p>
+    </div>
+</div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">我的訂單</div>
+    <div class="panel-body">
+        <table class="table">
+            <tr>
+                <th>訂單編號</th>
+                <th>訂單金額</th>
+                <th>是否支付</th>
+                <th>訂單狀態</th>
+                <th>下單時間</th>
+                <th>下單用戶</th>
+                <th>優惠金額</th>
+                <th>操作</th>
+            </tr>
+            @foreach (Order item in ViewBag.orderList)
+            {
+                <tr class="active">
+                    <th scope="row">@item.OrderNum</th>
+                    <th>@item.SumPrice</th>
+                    <th>
+                        @switch(item.IsPay) {
+                            case 1:
+                                <b class="btn btn-success">已付款</b>
+                                break;
+                            case 0:
+                                <b class="btn btn-danger">未付款</b>
+                                break;
+                        }
+                    </th>
+                    <th>
+                        @switch (item.State)
+                        {
+                            case 1:
+                                <b class="btn btn-danger">未發貨</b>
+                                break;
+                            case 2:
+                                <b class="btn btn-success">已發貨</b>
+                                break;
+                            case 3:
+                                <b class="btn btn-info">已簽收</b>
+                                break;
+                            case 4:
+                                <b class="btn btn-pr">已評論</b>
+                                break;
+                            case 5:
+                                <b class="btn btn-default">退貨中</b>
+                                break;
+                            case 6:
+                                <b class="btn btn-success">訂單已完成</b>
+                                break;
+                            default:
+                                <b class="btn btn-danger">訂單已取消</b>
+                                break;
+                        }
+                    </th>
+                    <th>@item.Createtime</th>
+                    <th>@item.UidNavigation.Nickname</th>
+                    <th>@(item.DecMoney)元</th>
+                    <th><a href="/UserOrder/Details/@item.Id">查看訂單詳情</a></th>
+                </tr>
+            }
+        </table>
+        @if (ViewBag.orderList.Count == 0) { 
+               <h1 align="center">還未有訂單</h1>
+        }
+    </div>
+</div>
+
