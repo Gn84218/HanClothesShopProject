@@ -1,10 +1,118 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-    Layout = "~/Views/Shared/_UserLayout.cshtml";
-}
+﻿@using HanClothesShopProject.Models
+@{
+    ViewData["Title"] = "首頁";
+    var bannerList = ViewBag.ChatList as List<ImageChart>;
+    var recommendList = ViewBag.reList as List<Product>;
+    var randomList = ViewBag.randomProducts as List<Product>;
+    var blogList = ViewBag.blogList as List<Article>;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- 🔹 輪播圖 -->
+<div class="banner">
+    @if (bannerList != null && bannerList.Any())
+    {
+        <div class="swiper">
+            <div class="swiper-wrapper">
+                @foreach (var item in bannerList)
+                {
+                    <div class="swiper-slide">
+                        <img src="@item.ImageUrl" alt="banner" />
+                    </div>
+                }
+            </div>
+        </div>
+    }
 </div>
+
+<hr />
+
+<!-- 🔹 推薦商品 -->
+<h2>為您推薦</h2>
+<div class="product-list">
+    @if (recommendList != null && recommendList.Any())
+    {
+        foreach (var item in recommendList)
+        {
+            <div class="product-item">
+                <a href="/Product/Detail/@item.Id">
+                    <img src="@item.Img" alt="@item.Title" />
+                    <h4>@item.Title</h4>
+                    <p class="price">$@item.Price</p>
+                </a>
+            </div>
+        }
+    }
+    else
+    {
+        <p>目前沒有推薦商品</p>
+    }
+</div>
+
+<hr />
+
+<!-- 🔹 隨機商品 -->
+<h2>你可能會喜歡</h2>
+<div class="product-list">
+    @if (randomList != null && randomList.Any())
+    {
+        foreach (var item in randomList)
+        {
+            <div class="product-item">
+                <a href="/Product/Detail/@item.Id">
+                    <img src="@item.Img" />
+                    <h4>@item.Title</h4>
+                    <p>$@item.Price</p>
+                </a>
+            </div>
+        }
+    }
+</div>
+
+<hr />
+
+<!-- 🔹 最新文章 -->
+<h2>最新文章</h2>
+<ul class="article-list">
+    @if (blogList != null && blogList.Any())
+    {
+        foreach (var item in blogList)
+        {
+            <li>
+                <a href="/Home/articeDetail/@item.Id">
+                    @item.Title
+                </a>
+                <span class="date">@item.Createtime.ToString("yyyy-MM-dd")</span>
+            </li>
+        }
+    }
+</ul>
+
+<style>
+    .product-list {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .product-item {
+        width: 200px;
+        border: 1px solid #eee;
+        padding: 10px;
+        text-align: center;
+    }
+
+        .product-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+    .price {
+        color: red;
+        font-weight: bold;
+    }
+
+    .article-list li {
+        margin-bottom: 10px;
+    }
+</style>

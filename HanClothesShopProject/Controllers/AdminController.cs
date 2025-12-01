@@ -25,8 +25,8 @@ namespace HanClothesShopProject.Controllers
         public IActionResult Index()
         {
             // 今日平台收入
-            var todayStart = DateTime.Now;
-            var endday = todayStart.AddDays(1); // 明日
+            var todayStart = DateTime.Now.Date;
+            var endday = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59); // 明日
             ViewBag.todayMoney = _dbContext.Orders
                 .Where(p => p.IsPay == 1 && p.Createtime >= todayStart && p.Createtime <= endday)
                 .Sum(p => (decimal?)p.SumPrice) ?? 0; // 加總，轉型為 decimal? 避免因 null 值拋出例外 

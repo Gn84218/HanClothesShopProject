@@ -1,15 +1,31 @@
 ﻿@model IEnumerable<HanClothesShopProject.Models.Message>
 @inject dbContext _dbContext
-
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 <style>
+    .container_box {
+        display: flex;
+        width: 100%; /* 設置為100%以適應視窗 */
+        height: 800px;
+        box-shadow: 0 0 10px #ccc;
+        border-radius: 10px;
+        margin: 0 auto;
+        margin-bottom: 50px;
+    }
+
+        .container_box .chat-left {
+            flex: 0 0 30%; /* 左側佔30% */
+            padding: 10px;
+            border-right: 1px solid #ccc;
+            box-sizing: border-box; /* 包含內邊距和邊框 */
+        }
+
     .chat-container {
+        flex: 0 0 70%; /* 右側佔70% */
         display: flex;
         flex-direction: column;
-        height: 100%;
         padding: 20px;
-        box-sizing: border-box;
+        box-sizing: border-box; /* 包含內邊距和邊框 */
     }
 
     .chat-messages {
@@ -24,6 +40,7 @@
         display: flex;
         align-items: center;
         margin-bottom: 10px;
+        transition: background 0.3s;
     }
 
         .message img {
@@ -37,6 +54,8 @@
             background: #f0f0f0;
             padding: 10px;
             border-radius: 10px 10px 10px 0;
+            max-width: 70%;
+            word-wrap: break-word;
         }
 
         .message.right {
@@ -47,6 +66,8 @@
                 background: #b3d4fc;
                 padding: 10px;
                 border-radius: 10px 10px 0 10px;
+                max-width: 70%;
+                word-wrap: break-word;
             }
 
     .chat-input {
@@ -59,6 +80,7 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 10px 0 0 10px;
+            font-size: 16px;
         }
 
         .chat-input button {
@@ -68,29 +90,16 @@
             border: none;
             border-radius: 0 10px 10px 0;
             cursor: pointer;
+            font-size: 16px;
         }
 
             .chat-input button:hover {
                 background: #0056b3;
             }
 
-    .container_box {
-        display: flex;
-        width: 1000px;
-        height: 800px;
-        box-shadow: 0 0 10px #ccc;
-        border-radius: 10px;
-        margin: 0px auto;
-        margin-bottom: 50px;
-    }
-
-        .container_box .chat-left {
-            flex-grow: 2;
-            padding: 10px;
-        }
-
-    .chat-container {
-        flex-grow: 8;
+    .chat-left p {
+        font-weight: bold;
+        text-align: center;
     }
 
     .chat-messages2 {
@@ -100,7 +109,7 @@
     }
 
         .chat-messages2 li {
-            padding: 20px 0px;
+            padding: 20px 0;
         }
 
         .chat-messages2 img {
@@ -115,52 +124,39 @@
             text-decoration: none;
         }
 
-    /* 针对整个滚动条 */
+    /* 滚动条样式 */
     ::-webkit-scrollbar {
-        width: 10px; /* 滚动条的宽度 */
-        height: 10px; /* 如果需要水平滚动条的话 */
+        width: 10px;
     }
 
-    /* 滚动条滑块 */
     ::-webkit-scrollbar-thumb {
-        background-color: darkgrey; /* 滑块的颜色 */
-        border-radius: 10px; /* 滑块的圆角 */
-        border: 2px solid transparent; /* 滑块边框（可选） */
-        background-clip: content-box; /* 确保边框和圆角可见 */
+        background-color: darkgrey;
+        border-radius: 10px;
     }
 
-        /* 滚动条滑块在鼠标悬停时的样式 */
         ::-webkit-scrollbar-thumb:hover {
-            background-color: #555; /* 滑块悬停时的颜色 */
+            background-color: #555;
         }
 
-    /* 滚动条轨道 */
     ::-webkit-scrollbar-track {
-        background: #f1f1f1; /* 轨道的颜色 */
-        border-radius: 10px; /* 轨道的圆角 */
-    }
-
-    /* 滚动条轨道的两侧按钮（仅在某些情况下出现，如浏览器自带的缩放滚动条） */
-    ::-webkit-scrollbar-button {
-        display: none; /* 通常不需要按钮，因此隐藏 */
-    }
-
-    /* 滚动条两端（或按钮）的样式（某些情况下使用） */
-    ::-webkit-scrollbar-corner {
-        background: #f1f1f1; /* 角落的颜色 */
+        background: #f1f1f1;
+        border-radius: 10px;
     }
 </style>
+
+
 <br />
 <br />
 <br />
 <br />
 <br />
 <br />
+
 <div class="container_box">
-    <!-- 左侧列表 -->
+    <!-- 左側列表 -->
     <div class="chat-left">
-        <p align="center">近期消息</p>
-        <!-- 左侧发送过消息的页面列表 -->
+        <p>近期消息</p>
+        <!-- 左側發送過消息的頁面列表 -->
         <ul class="chat-messages2">
             @foreach (Message item in Model)
             {
@@ -171,7 +167,7 @@
                         @if (item.FromUserId != ViewBag.uid)
                         {
                             <a href="/Home/Send?rid=@item.FromUserId">
-                                <img src="@info.Img" alt="Sender Avatar" class="avatar" />
+                                <img src="@info.Img" alt="發送者頭像" class="avatar" />
                                 <b>@info.Nickname</b>
                             </a>
                         }
@@ -180,7 +176,7 @@
             }
         </ul>
     </div>
-    <!-- 右侧聊天框 -->
+    <!-- 右側聊天框 -->
     <div class="chat-container">
         @if (ViewBag.rid != null && ViewBag.uinfo != null && ViewBag.rid != 0)
         {
@@ -189,122 +185,104 @@
                 <span id="nick">@ViewBag.uinfo.Nickname</span>
             </p>
             <ul class="chat-messages" id="chat-box">
-                <!-- 通过下面的left和right样式来显示左边用户的消息，还是发送者的消息内容 -->
-                @* <li class="message left">
-            <img src="user1.png" alt="User 1" />
-            <p>你好</p>
-            </li>
-            <li class="message right">
-            <img src="user2.png" alt="User 2" />
-            <p>你好</p>
-            </li> *@
-                <!-- 更多消息可以继续添加 -->
+                <!-- 聊天消息列表 -->
             </ul>
             <div class="chat-input">
-                <input type="text" id="message-content" placeholder="留下你想说的话" />
-                <button type="button" id="send-button">发送</button>
+                <input type="text" id="message-content" placeholder="留下你想說的話..." />
+                <button type="button" id="send-button">發送</button>
             </div>
         }
         else
         {
-            <p>点击左侧聊天框查看聊天内容</p>
+            <p>點擊左側聊天框查看聊天內容</p>
         }
     </div>
 </div>
 
-<!-- 核心实现异步通讯的代码 -->
+<!-- 核心實現異步通訊的代碼 -->
 <script src="/js/signalr.min.js"></script>
 <script>
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(`/chathub`)
         .build();
 
-    // SignalR 连接
+    // SignalR 連接
     connection.start()
         .then(() => {
-            console.log("SignalR 连接中.");
+            console.log("SignalR 連接成功.");
         })
         .catch(err => console.error(err.toString()));
 
-    // 处理连接过程事务
+    // 處理連接過程事務
     connection.onreconnecting(error => {
-        console.warn(`signalR连接过程错误： "${error}". 请重新连接.`);
+        console.warn(`SignalR 連接過程錯誤： "${error}". 正在重新連接.`);
     });
 
     connection.onreconnected(connectionId => {
-        console.log(`重新连接，连接id是： "${connectionId}".`);
+        console.log(`重新連接成功，連接ID是： "${connectionId}".`);
     });
 
     connection.onclose(error => {
-        console.error(`关闭连接过程的错误： "${error}". 尝试重新连接.`);
+        console.error(`關閉連接過程的錯誤： "${error}". 嘗試重新連接.`);
     });
 
-
-    //消息列表
+    // 消息列表
     const messageList = document.getElementById('chat-box');
-    //发送按钮
+    // 發送按鈕
     const sendButton = document.getElementById('send-button');
-    //消息内容
+    // 消息內容
     const messageContent = document.getElementById('message-content');
 
-    // 展示消息列表内容
+    // 顯示消息列表內容
     function appendMessage(senderId, content) {
         const messageLi = document.createElement('li');
-        messageLi.className = 'message ' + (senderId != @ViewBag.rid ? 'right' : 'left'); // Assuming current userId is 1
+        messageLi.className = 'message ' + (senderId != @ViewBag.rid ? 'right' : 'left');
         var img = document.createElement("img");
-        //发送者头像，在右边
         if (senderId != @ViewBag.rid) {
             img.src = "@HttpContextAccessor.HttpContext.Session.GetString("img")";
         } else {
-            img.src = document.getElementById('pic').src; //接收者头像
+            img.src = document.getElementById('pic').src;
         }
-        //img追加到li中
         messageLi.appendChild(img);
-        //发送的消息内容处理
         var messageText = document.createElement("p");
         messageText.textContent = content;
         messageLi.appendChild(messageText);
-        //最后再追加到ul中全部显示
         messageList.appendChild(messageLi);
 
-        // 确保滚动到底部
+        // 確保滾動到底部
         messageList.scrollTop = messageList.scrollHeight;
     }
 
-    // 接收消息结果
+    // 接收消息結果
     connection.on("ReceiveMessage", (senderId, content) => {
-        console.log("从用户处接收到消息：" + senderId + ": " + content);
-        appendMessage(senderId, content); // 这里是将消息添加到聊天框
+        console.log("從用戶處接收到消息：" + senderId + ": " + content);
+        appendMessage(senderId, content);
     });
 
-    //发送消息
+    // 發送消息
     sendButton.addEventListener('click', function () {
         const content = messageContent.value.trim();
         if (content) {
-            const receiverId = @ViewBag.rid; // 接收者的id
+            const receiverId = @ViewBag.rid;
             connection.invoke("SendMessage", receiverId, content)
                 .then(() => {
-                    console.log("发送的内容是: " + content);
+                    console.log("發送的內容是: " + content);
                 })
                 .catch(err => console.error(err.toString()));
             messageContent.value = '';
         }
     });
 
-    //触发输入框输入完成，按回车发送消息
+    // 按回車發送消息
     document.getElementById('message-content').addEventListener('keydown', function (event) {
-        // 检查是否按下了回车键
         if (event.key === 'Enter') {
-            // 阻止表单的默认提交行为（如果是在表单内的话）
             event.preventDefault();
-
-            // 执行你想要的操作
             const content = messageContent.value.trim();
             if (content) {
-                const receiverId = @ViewBag.rid; // 接收者的id
+                const receiverId = @ViewBag.rid;
                 connection.invoke("SendMessage", receiverId, content)
                     .then(() => {
-                        console.log("发送的内容是: " + content);
+                        console.log("發送的內容是: " + content);
                     })
                     .catch(err => console.error(err.toString()));
                 messageContent.value = '';
@@ -312,28 +290,19 @@
         }
     });
 
-    // 加载历史聊天记录
+    // 加載歷史聊天記錄
     loadChatHistory();
     function loadChatHistory() {
         const receiverId = @ViewBag.rid;
 
-        // 通过 API 获取聊天记录
         fetch(`/api/chat/history/${receiverId}`)
             .then(response => response.json())
             .then(data => {
                 data.forEach(item => {
-                    //初始化时，加载之前的历史聊天记录
-                    //const msg = document.createElement('li');
-                    //msg.className = 'message ' + (item.fromUserid != @ViewBag.rid ? 'right' : 'left'); // Assuming current userId is 1
-
-                    //msg.textContent = `${item.message}`;
-                    //messageList.appendChild(msg);
-                    //追加消息内容到聊天框中
                     appendMessage(item.fromUserid, item.message);
                 });
             })
-            .catch(err => console.error("获取历史聊天记录失败: ", err));
-        // 确保滚动到底部
+            .catch(err => console.error("獲取歷史聊天記錄失敗: ", err));
         messageList.scrollTop = messageList.scrollHeight;
     }
 </script>

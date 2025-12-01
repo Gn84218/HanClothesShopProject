@@ -2,6 +2,7 @@
 using HanClothesShopProject.Models;
 using Microsoft.EntityFrameworkCore;
 using UEditorNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace HanClothesShopProject
 {
@@ -22,11 +23,12 @@ namespace HanClothesShopProject
             //添加ueditor服務
             builder.Services.AddUEditorService();
             builder.Services.AddMvc();
-
+            //使用算法推薦服務類
+            builder.Services.AddScoped<RecommendationService>();
+            //添加SignalR訊息服務類
             builder.Services.AddScoped<MessageService>();
             // 添加 SignalR 服务
             builder.Services.AddSignalR();
-
 
             //建構一個過程
             var app = builder.Build();
@@ -51,6 +53,9 @@ namespace HanClothesShopProject
             app.UseAuthorization();
             // 配置 SignalR 路由
             app.MapHub<ChatHub>("/chathub");
+
+
+            
 
 
             // 配置控制器與路由的對應關係，預設顯示控制器中對應的方法

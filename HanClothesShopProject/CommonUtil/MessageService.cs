@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HanClothesShopProject.CommonUtil
 {
-    //消息服務類別（目前為空）
+    //消息服務類別（目前為空）儲存和獲取消息
     public class MessageService
     {
         //数据库上下文对象

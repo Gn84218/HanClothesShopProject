@@ -7,7 +7,7 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">歡迎進入商城</div>
-    <div class="panel-body">
+    <div >
         <h1 > 歡迎進入商城系統</h1>
         <p>
             @if (HttpContextAccessor.HttpContext.Session.GetInt32("role") != null
@@ -28,7 +28,7 @@
     <div class="col-sm-4">
         <div class="panel panel-default">
             <div class="panel-heading">今天(@(DateTime.Now.ToString("D")))收入</div>
-            <div class="panel-body"style="text-align:center">
+            <div style="text-align:center">
                 <b style="color:red;font-size:36px">@ViewBag.todayMoney</b>元
             </div>
         </div>
@@ -36,7 +36,7 @@
     <div class="col-sm-4">
         <div class="panel panel-default">
             <div class="panel-heading">本周@(ViewBag.startWeek)-@(ViewBag.endWeek)收入</div>
-            <div class="panel-body" style="text-align:center">
+            <div  style="text-align:center">
                 <b style="color:red;font-size:36px">@ViewBag.weekMoney</b>元
             </div>
         </div>     
@@ -44,7 +44,7 @@
     <div class="col-sm-4">
         <div class="panel panel-default">
             <div class="panel-heading">今年(@(DateTime.Now.ToString("yyyy")))收入</div>
-            <div class="panel-body" style="text-align:center">
+            <div  style="text-align:center">
                 <b style="color:red;font-size:36px">@ViewBag.yearMoney</b>元
             </div>
         </div>
